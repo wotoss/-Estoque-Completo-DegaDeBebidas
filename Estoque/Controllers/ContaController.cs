@@ -27,10 +27,10 @@ namespace Estoque.Controllers
             }
             //caso não esteja correto ele retorna a pagina de login
 
-            var achou = UsuarioModel.ValidarUsuario(login.Usuario , login.Senha);
-            if (achou)
-            {
-                FormsAuthentication.SetAuthCookie(login.Usuario, login.LembrarMe);
+            var usuario = UsuarioModel.ValidarUsuario(login.Usuario , login.Senha);
+            if (usuario != null)
+            {   //estou pegando o nome que esta no base de dados e usando o cookie
+                FormsAuthentication.SetAuthCookie(usuario.Nome, login.LembrarMe);
                 if (Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
