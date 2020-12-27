@@ -1,0 +1,94 @@
+﻿
+@model List<Estoque.Models.UsuarioModel>
+@{
+    Layout = "~/Views/Shared/_Cadastro.cshtml";
+    ViewBag.Title = "Usuário";
+}
+
+@section Styles {
+    <link href="~/Content/bootstrap-select.css" rel="stylesheet" />
+    <link href="~/Content/Cadastro/Usuario.css" rel="stylesheet" />
+}
+
+@section TituloGrid{
+    <th>Nome</th>
+    <th>Login</th>
+    <th>Ação</th>
+}
+@section LinhaGrid{
+
+    @{
+        var linha = 0;
+        <!--Fiz o bind lá em cima do meu model, agora posso fazer um foreach-->
+        foreach (var item in Model)
+        {
+            linha++; <!--No 1º loop ele passar a ser linha 1 e assim sucessivamente. Até linha ser menor que quantide maxima-->
+            <!--paginação continuação-->
+            <!--Este if é um contador, enquanto linha form menor do que quantidade de pagina. Ele vai imprimir-->
+            if (linha <= ViewBag.QuantMaxLinhasPorPagina)
+            {
+
+                <!--conteudo-->
+                <tr data-id="@item.Id">
+                    <td>@item.Nome</td>
+                    <td>@item.Login</td>
+                    <td>
+                        <a class="btn btn-primary btn-alterar" role="button"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+                        <a class="btn btn-danger btn-excluir" role="button"><i class="glyphicon glyphicon-trash"></i> Excluir</a>
+                    </td>
+                </tr>
+                <!--paginação continuação-->
+            }
+            //Ele vai imprimir até a quinta linha na sexta ele dá um brezk no loop. E vi para baixo imprimir a proxima pagina
+            else
+            {
+                break;
+
+            }
+        }
+    }
+
+}
+
+@section CamposCadastro {
+    <div class="row">
+        <!--Senha-->
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.Label("txt_nome", "Nome", new { @class = "col-md-3 control-label" })
+
+                @Html.TextBox("txt_nome", null, new { @class = "form-control" })
+            </div>
+        </div>
+        <!--Login-->
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.Label("txt_login", "Login", new { @class = "col-md-3 control-label" })
+
+                @Html.TextBox("txt_login", null, new { @class = "form-control" })
+            </div>
+        </div>
+        <!--Senha-->
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.Label("txt_senha", "Senha", new { @class = "col-md-3 control-label" })
+
+                @Html.TextBox("txt_senha", null, new { @class = "form-control", type = "password" })
+            </div>
+        </div>
+
+    </div><!--div form-->
+}
+@section Scripts{
+    <script src="~/Scripts/bootstrap-select.js"></script>
+    <script>
+        var tituloPagina = '@ViewBag.Title';
+        var url_excluir = '@Url.Action("ExcluirUsuario", "CadUsuario")';
+        var url_confirmar = '@Url.Action("SalvarUsuario", "CadUsuario")';
+        var url_page_click = '@Url.Action("UsuarioPagina", "CadUsuario")';
+        var url_tam_pag_change = '@Url.Action("UsuarioPagina", "CadUsuario")';
+        var url_alterar = '@Url.Action("RecuperarUsuario", "CadUsuario")';
+    </script>
+    <script src="~/Scripts/Cadastro/Usuario.js"></script>
+
+}

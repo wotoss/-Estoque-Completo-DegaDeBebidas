@@ -1,0 +1,106 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Cadastro de " + ViewBag.Title;
+}
+
+@RenderSection("Styles", true)
+@RenderBody()
+
+<link href="~/Content/bootstrap-select.css" rel="stylesheet" />
+<link href="~/Content/Cadastro/GrupoProduto.css" rel="stylesheet" />
+
+<div id="cadastro">
+    <section id="cadastro_cabecalho">
+        <h1>@ViewBag.Title</h1>
+    </section>
+
+    <section id="cadastro_conteudo">
+
+        <div id="cabecalho_grid" class="row">
+            <div class="col-md-12">
+                <a id="btn_incluir" class="btn btn-success" role="button"><i class="glyphicon glyphicon-plus"></i> Cadastrar</a>
+                <!--vai conter a minha lista de itens, quantidade de páginas-->
+                @Html.DropDownList("ddl_tam_pag", (SelectList)ViewBag.ListaTamPag, new { @class = "selectpicker" })
+            </div>
+        </div>
+        <!--vou fazer a tabela-->
+        <div class="row">
+            <div class="col-md-12">
+                <table id="grid_cadastro" class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <!--cabeçalho-->
+                        <tr>
+                            @RenderSection("TituloGrid", true)
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @RenderSection("LinhaGrid", true)
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--SÓ VAI IMPRIMIR NA TELA TODO O SELECTOR DE PAGINA, SE FOR MAIOR QUE 1-->
+        @if (ViewBag.QuantPaginas > 1)
+        {
+            <!--Inicio -Quantidade de Paginas paginação-->
+            <div class="row">
+                <!--linha-->
+                <div class="col-md-12">
+                    <!--coluna-->
+                    <nav>
+                        <ul class="pagination">
+                            <!--<li class="page-item"><a class="page-link" href="#">Previous</a></li>-->
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <!--Vou fazer um for iniciar da 2º pagina por a 1º já é fixa-->
+                            @for (int i = 2; i <= ViewBag.QuantPaginas; i++)
+                            {
+                                <!--Já dentro do for eu vou imprimir a pagina na tela  dinamicamente -->
+                                <li class="page-item"><a class="page-link" href="#">@i</a></li>
+                            }
+
+
+                            <!--<li class="page-item"><a class="page-link" href="#">Next</a></li>-->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!--Fim - paginação-->
+        }<!---->
+    </section>
+</div>
+<!--Modal a apresentar-->
+@Html.Hidden("id_cadastro");
+<div id="modal_cadastro" class="form-horizontal invisivel" role="dialog">
+    <!--para mosrat a mensagem da linha  106-->
+    <div id="msg_mensagem_aviso" class="text-danger invisivel"></div>
+    <fieldset>
+        @Html.AntiForgeryToken() <!--ele vai gerar o token de validação e a controller vai poder validar-->
+        @RenderSection("CamposCadastro", true)
+
+        <!--buttom-->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="modal-footer">
+                        <a id="btn_sair" class="btn btn-default" role="button" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Sair</a>
+                        <a id="btn_confirmar" class="btn btn-primary" role="button"><i class="glyphicon glyphicon-ok"></i> Salvar</a>
+                    </div>
+                    <!--Aviso para o usuario-->
+                    <div id="msg_aviso" class="alert alert-warning invisivel">Necessário preencher os campos acima</div>
+                    <div id="msg_erro" class="alert alert-danger invisivel">Ops ! Estamos com erro!</div>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+</div>
+
+@section Scripts{
+    @RenderSection("Scripts", true)
+    <script src="~/Scripts/Cadastro/CadastroBase.js"></script>
+}
+
+
+

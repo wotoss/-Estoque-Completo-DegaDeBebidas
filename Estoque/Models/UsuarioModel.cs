@@ -74,8 +74,29 @@ namespace Estoque.Models
 
             }
 
+
+        //CRIAR UM MÉTODO APENAS PARA OBTER A QUANTIDADE DE REGISTO QUE TEMOS NA BASE DE DADOS
+        public static int RecuperarQuantidade()
+        {
+            var ret = 0;
+            using (var conexao = new SqlConnection())
+            {
+                conexao.ConnectionString = ConfigurationManager.ConnectionStrings["real"].ConnectionString;
+                conexao.Open();
+                using (var comando = new SqlCommand())
+                {
+                    comando.Connection = conexao;
+                    comando.CommandText = "select count(*) from usuario";
+                    ret = (int)comando.ExecuteScalar();
+                }
+            }
+            return ret;
+        }
+
+
+
         //COMEÇANDO O ACESSO AO BANCO DE DADOS
-        public static List<UsuarioModel> RecuperarLista()
+        public static List<UsuarioModel> RecuperarLista(int pagina, int tamPagina)
         {
             var ret = new List<UsuarioModel>();
 
@@ -87,12 +108,17 @@ namespace Estoque.Models
                 //agora vou dar o comando
                 using (var comando = new SqlCommand())
                 {
+                    //estou criando a posição da pagina
+                    var pos = (pagina - 1) * tamPagina;
 
                     comando.Connection = conexao;
                     //Aqui eu vou definir o meu comando o que vou execultar no banco de dados. Vou fazer a minha query
                     //montando query sql => se o usuario digitado se encontra no banco de dados
                     //Esta fazendo uma consulta e (trazendo ou recuperando) todos as informações do banco de dados oredenado por (nome)
-                    comando.CommandText = " select * from usuario order by nome ";
+                    comando.CommandText = string.Format(
+                        "select * from usuario order by nome offset {0} rows fetch next {1} rows only",
+                       pos > 0 ? pos - 1 : 0, tamPagina);
+
                     var reader = comando.ExecuteReader(); //este (reader) esta recebendo a execução
                     //while => enquanto tiver algo a ser lido
                     //para cada item que for lido eu estou incluido um objeto UsuarioModel
