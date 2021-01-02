@@ -9,7 +9,7 @@ namespace Estoque.Controllers
 {
     public class CadastroController : Controller
     {
-
+        private const int _quantMaxLinhasPorPagina = 5;
 
         [Authorize]
         public ActionResult MarcaProduto()
@@ -21,11 +21,7 @@ namespace Estoque.Controllers
         {
             return View();
         }
-        [Authorize]
-        public ActionResult UnidadeMedida()
-        {
-            return View();
-        }
+        
         [Authorize]
         public ActionResult Produto()
         {
@@ -51,11 +47,7 @@ namespace Estoque.Controllers
         {
             return View();
         }
-        [Authorize]
-        public ActionResult PerfilUsuario()
-        {
-            return View();
-        }
+       
        
     }
 }

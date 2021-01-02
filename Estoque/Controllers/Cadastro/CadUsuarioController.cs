@@ -1,23 +1,25 @@
-﻿using Estoque.Models;
+﻿using Estoque;
+using Estoque.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Estoque.Controllers
 {
+    [Authorize(Roles = "Gerente")]
     public class CadUsuarioController : Controller
     {
-
+        
         private const int _quanMaxLinhasPorPagina = 5;
         //Vou fazer uma constante
         private const string _senhaPadrao = "{$127;$188}";
 
         //Ele já esta trazendo do banco de dados através do método RecuperarLista();
-        [Authorize]
+        
         public ActionResult Index()
         {
+            
             //vou passar a viewBag para a view
             ViewBag.SenhaPadrao = _senhaPadrao;
             ViewBag.ListaTamPag = new SelectList(new int[] { _quanMaxLinhasPorPagina, 10, 15, 20 }, _quanMaxLinhasPorPagina);
@@ -39,7 +41,6 @@ namespace Estoque.Controllers
 
 
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public JsonResult UsuarioPagina(int pagina, int tamPag)
         {
@@ -52,7 +53,6 @@ namespace Estoque.Controllers
 
         //Neste estou recuperando o produto pelo Id
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult RecuperarUsuario(int id)
         {
@@ -71,7 +71,6 @@ namespace Estoque.Controllers
 
         //Salvar  e Editar no mesmo método
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult SalvarUsuario(UsuarioModel model)
         {

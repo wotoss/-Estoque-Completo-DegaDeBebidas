@@ -1,6 +1,8 @@
 ﻿
 
 using Estoque.Models;
+using System;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
@@ -29,8 +31,16 @@ namespace Estoque.Controllers
 
             var usuario = UsuarioModel.ValidarUsuario(login.Usuario , login.Senha);
             if (usuario != null)
-            {   //estou pegando o nome que esta no base de dados e usando o cookie
-                FormsAuthentication.SetAuthCookie(usuario.Nome, login.LembrarMe);
+            {   
+                //VAMOS CRIAR O COOKIE EM TRÊS PASSOS => 1º CRIA O TICKETS, 2º COOKIE  3º E DEPOIS COLOCANDO NO RESPONSE PARA ENVIAR AO NAVEGADOR  
+                //Neste momento eu criei o meu (tickts de autenticação) que contem o nomeDoUsuario, DatadeInicio, QuantidadeDe expiração, a persistencia, Quem é o usuario
+               var ticket =  FormsAuthentication.Encrypt(new FormsAuthenticationTicket(
+                    1, usuario.Nome, DateTime.Now, DateTime.Now.AddHours(12), login.LembrarMe, usuario.RecuperarStringNomePerfis()));//neste momento eu estou pegando o meu perfil dinâmicamente
+                //Agora que tenho o meu ticket, vou criar  o meu cookie baseado no ticktes
+                var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, ticket);
+                //Agora vou responder ao meu browser ou navegador e adicionar Add no meu cookie
+                Response.Cookies.Add(cookie);
+
                 if (Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);

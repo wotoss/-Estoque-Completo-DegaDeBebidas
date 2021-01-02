@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Web.Security;
 
 namespace Estoque
 {
@@ -39,6 +41,38 @@ namespace Estoque
                 Response.End();
             //Inclusi pode futuramente gravar um log => para sabermos que tivemos alguma solictação errada.
             //Para fazer uma vistoria depois.
+            }
+        }
+
+        //AQUI EU VOU OBTER O COOKIE QUE EU CRIEI  NA CONTROLLER
+        protected void Application_AuthenticateRequest(Object sender, EventArgs e)
+        {
+            //para eu obter eu dou um context
+            var cookie = Context.Request.Cookies[FormsAuthentication.FormsCookieName];
+
+            //Aqui eu  verifico se o meu cookie está vindo....
+            if (cookie != null && cookie.Value != string.Empty)
+            {
+                FormsAuthenticationTicket ticket;
+                try
+                {
+                    //O cookie vindo preenhido da controller,  ele vem Criptografado. Neste momento eu vou Decriptografar...
+                    ticket = FormsAuthentication.Decrypt(cookie.Value);
+                }
+                catch
+                {
+                    return;
+                }
+                //VEJA A LOGICA TODA DESTA TELA => NÓS ESTAMOS COOKIE DA CONTROLLER E TRAZENDO PARA PREENCHER O GENERICpRINCIPAL
+
+                //neste momento eu estou trazendo o meu usuario (Gerente) atráves do (UserData) lá do meu controller
+                // O ponto e virgula (';') => signnifica que tem mais de uma roles
+                var perfis = ticket.UserData.Split(';');
+
+                if (Context.User != null)
+                {
+                    Context.User = new GenericPrincipal(Context.User.Identity, perfis);
+                }
             }
         }
     }

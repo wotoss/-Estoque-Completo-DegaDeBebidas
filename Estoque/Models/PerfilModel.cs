@@ -1,4 +1,4 @@
-﻿using Estoque.Helpers;
+﻿using Estoque.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,72 +7,26 @@ using System.Data;
 using System.Data.SqlClient;
 
 
-namespace Estoque.Models
+namespace Estoque
 {
-    /// <summary>
-    /// Estamos usando o Framework AdoNet provider SQLServer
-    /// Pagina de Cadastro de Usuarios
-    /// </summary>
-    public class UsuarioModel
+    public class PerfilModel
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Digite o login")]
-        public string Login { get; set; }
-
-        [Required(ErrorMessage = "Digite a senha")]
-        public string Senha { get; set; }
-
-        [Required(ErrorMessage = "Digite o nome")]
+        [Required(ErrorMessage = "Digite o nome !")]
         public string Nome { get; set; }
 
+        //se o usuario informar ou não ele já entra setado como false.
+        public bool Ativo { get; set; }
 
-        public static UsuarioModel ValidarUsuario(string login, string senha)
+        //estmos fazendo a associação de UsuarioModel, com PerfilModel => Lembrando que temos uma FK no sql
+        public List<UsuarioModel> Usuarios { get; set; }
+
+        //vamos inicializar no construtor está lista 
+        public PerfilModel()
         {
-            UsuarioModel ret = null;
-
-            using (var conexao = new SqlConnection())
-            {
-                //Criar a minha conxeção
-                conexao.ConnectionString = ConfigurationManager.ConnectionStrings["real"].ConnectionString;
-                conexao.Open();
-                //agora vou dar o comando
-                using (var comando = new SqlCommand())
-                {
-
-                    comando.Connection = conexao;
-                    //Aqui eu vou definir o meu comando o que vou execultar no banco de dados. Vou fazer a minha query
-                    //montando query sql => se o usuario digitado se encontra no banco de dados
-                    comando.CommandText = "select * from usuario where login=@login and senha=@senha";
-                    //vamos saber se existi algum {0} login com a senha ou {1} com  senha que foi digitado
-
-                    comando.Parameters.Add("@login", SqlDbType.VarChar).Value = login;
-                    comando.Parameters.Add("@Senha", SqlDbType.VarChar).Value = CriptoHelper.HashMD5(senha);
-
-                    //retornar o usuario para minha variavel do inicio da tela
-                    var reader = comando.ExecuteReader();
-                    //se ele encontrou algum usuario com login e senha
-                    if (reader.Read())
-                    {
-                        //ele encontrando no banco ele vai criar um usuario
-                        ret = new UsuarioModel
-                        {
-                            //Agora eu tenho o meu usuário preenchido...
-                            Id = (int)reader["id"],
-                            Login = (string)reader["login"],
-                            Senha = (string)reader["senha"],
-                            Nome = (string)reader["nome"],
-
-                        };
-
-                    }
-                }
-            }
-            //agor faço o retorno com o usuario encontrado. 
-            return ret;
-
+            this.Usuarios = new List<UsuarioModel>();
         }
-
 
         //CRIAR UM MÉTODO APENAS PARA OBTER A QUANTIDADE DE REGISTO QUE TEMOS NA BASE DE DADOS
         public static int RecuperarQuantidade()
@@ -85,7 +39,7 @@ namespace Estoque.Models
                 using (var comando = new SqlCommand())
                 {
                     comando.Connection = conexao;
-                    comando.CommandText = "select count(*) from usuario";
+                    comando.CommandText = "select count(*) from perfil";
                     ret = (int)comando.ExecuteScalar();
                 }
             }
@@ -95,9 +49,9 @@ namespace Estoque.Models
 
 
         //COMEÇANDO O ACESSO AO BANCO DE DADOS
-        public static List<UsuarioModel> RecuperarLista(int pagina = -1, int tamPagina = -1)
+        public static List<PerfilModel> RecuperarLista(int pagina, int tamPagina)
         {
-            var ret = new List<UsuarioModel>();
+            var ret = new List<PerfilModel>();
 
             using (var conexao = new SqlConnection())
             {
@@ -111,39 +65,24 @@ namespace Estoque.Models
                     var pos = (pagina - 1) * tamPagina;
 
                     comando.Connection = conexao;
-
-                    if (pagina == -1 || tamPagina == -1)
-                    {
-                        comando.CommandText = "select * from usuario order by nome";
-
-                    }
-                    else
-                    {
-                        //Aqui eu vou definir o meu comando o que vou execultar no banco de dados. Vou fazer a minha query
-                        //montando query sql => se o usuario digitado se encontra no banco de dados
-                        //Esta fazendo uma consulta e (trazendo ou recuperando) todos as informações do banco de dados oredenado por (nome)
-                        comando.CommandText = string.Format(
-                            "select * from usuario order by nome offset {0} rows fetch next {1} rows only",
-                           pos > 0 ? pos - 1 : 0, tamPagina);
-
-
-                    }
-
-
+                    //Aqui eu vou definir o meu comando o que vou execultar no banco de dados. Vou fazer a minha query
+                    //montando query sql => se o usuario digitado se encontra no banco de dados
+                    //Esta fazendo uma consulta e (trazendo ou recuperando) todos as informações do banco de dados oredenado por (nome)
+                    comando.CommandText = string.Format(
+                        "select * from perfil order by nome offset {0} rows fetch next {1} rows only",
+                       pos > 0 ? pos - 1 : 0, tamPagina);
                     var reader = comando.ExecuteReader(); //este (reader) esta recebendo a execução
                     //while => enquanto tiver algo a ser lido
-                    //para cada item que for lido eu estou incluido um objeto UsuarioModel
+                    //para cada item que for lido eu estou incluido um objeto GrupoProdutoModel
                     while (reader.Read())
                     {
                         //RESUMINDO TUDO QUE EU PEGAR DO BANCO DE DADOS ATRAVES DA QUERY ELA VAI POPULAR E ME RETORNAR =>ret
-                        ret.Add(new UsuarioModel
+                        ret.Add(new PerfilModel
                         {
                             //estou fazendo uma conversão de tipo => reader retorna o objeto e eu tenho que pegar o tipo especific n setagem
                             Id = (int)reader["id"],
                             Nome = (string)reader["nome"],
-                            Login = (string)reader["login"],
-
-                            //TODO Senha 
+                            Ativo = (bool)reader["ativo"]
                         });
                     }
 
@@ -155,10 +94,10 @@ namespace Estoque.Models
 
 
         // AGORA VAMOS RECUPERAR UM UNICO ITEM DA BASE DE DADOS
-        public static UsuarioModel RecuperarPeloId(int id)
+        public static PerfilModel RecuperarPeloId(int id)
         {
             //Se não conseguir achar o Id ele retorna nullo
-            UsuarioModel ret = null;
+            PerfilModel ret = null;
 
             using (var conexao = new SqlConnection())
             {
@@ -171,24 +110,22 @@ namespace Estoque.Models
 
                     comando.Connection = conexao;
                     //Query vai ter o Id com parametro qualquer{0} para fazer a recebendo id passado
-                    comando.CommandText = "select * from usuario where (id = @id)";
+                    comando.CommandText = "select * from perfil where (id = @id)";
                     //COLOCANDO PARAMETERS PARA EVITAR SQL INJECT
                     comando.Parameters.Add("@id", SqlDbType.Int).Value = id;
 
                     var reader = comando.ExecuteReader(); //este (reader) esta recebendo a execução
                                                           //while => enquanto tiver algo a ser lido
-                                                          //para cada item que for lido eu estou incluido um objeto UsuarioModel
+                                                          //para cada item que for lido eu estou incluido um objeto GrupoProdutoModel
                     if (reader.Read())
                     {
                         //ATRAVES D QUERY ESTA RETORNANDO UM REGISTRO DA BASE DE DADOS
-                        ret = new UsuarioModel
+                        ret = new PerfilModel
                         {
                             //estou fazendo uma conversão de tipo => reader retorna o objeto e eu tenho que pegar o tipo especific n setagem
                             Id = (int)reader["id"],
                             Nome = (string)reader["nome"],
-                            Login = (string)reader["login"],
-
-
+                            Ativo = (bool)reader["ativo"]
                         };
                     }
 
@@ -219,7 +156,7 @@ namespace Estoque.Models
 
                         comando.Connection = conexao;
                         //Query vai ter o Id com parametro qualquer{0} para fazer a recebendo id passado
-                        comando.CommandText = "delete from usuario where (id = @id)";
+                        comando.CommandText = "delete from perfil where (id = @id)";
                         //COLOCANDO PARAMETRES PARA EVITAR SQL INJECT
                         comando.Parameters.Add("@id", SqlDbType.Int).Value = id;
 
@@ -255,12 +192,10 @@ namespace Estoque.Models
                     if (model == null)
                     {
                         //Query vai ter o Id com parametro qualquer{0} para fazer a recebendo id passado
-                        comando.CommandText = "insert into usuario (nome, login, senha) values (@nome, @login, @senha); select convert(int, scope_identity())";
+                        comando.CommandText = "insert into perfil (nome, ativo) values (@nome, @ativo); select convert(int, scope_identity())";
                         //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
                         comando.Parameters.Add("@nome", SqlDbType.VarChar).Value = this.Nome;
-                        comando.Parameters.Add("@login", SqlDbType.VarChar).Value = this.Login;
-                        comando.Parameters.Add("@senha", SqlDbType.VarChar).Value = CriptoHelper.HashMD5(this.Senha); //já gravar na base de dados a senha criptografada
-
+                        comando.Parameters.Add("@ativo", SqlDbType.VarChar).Value = (this.Ativo ? 1 : 0);
 
                         //select convert(int, scoped_identity()) =>  esta função que estou usando na query me retorna o ultimo valor que foi inserido no banco
                         //LEMBRANDO QUE O SCALAR ME RETONA UM OBJETO.LOGO EU CONVERTO PARA INTEIRO.
@@ -271,21 +206,10 @@ namespace Estoque.Models
                     else
                     {
                         //COLOQUE PARAMETERS E USEI @NOME NAS QUERY PARA EVITAR SQL INJECT
-                        comando.CommandText =
-                            "update usuario set nome=@nome, login=@login" +
-                            //se a senha veio preenchida eu vou atribuir esta string (senha=@senha") : se não eu paço vazia
-                            (!string.IsNullOrEmpty(this.Senha) ? ", senha=@senha" : "") +
-                            " where id =@id";
+                        comando.CommandText = "update perfil set nome=@nome, ativo=@ativo where id =@id";
 
                         comando.Parameters.Add("@nome", SqlDbType.VarChar).Value = this.Nome;
-                        comando.Parameters.Add("@login", SqlDbType.VarChar).Value = this.Login;
-
-
-                        if (!string.IsNullOrEmpty(this.Senha))
-                        {
-                            comando.Parameters.Add("@senha", SqlDbType.VarChar).Value = CriptoHelper.HashMD5(this.Senha); //já gravar na base de dados a senha criptografada
-                        }
-
+                        comando.Parameters.Add("@ativo", SqlDbType.VarChar).Value = this.Ativo;
                         comando.Parameters.Add("@id", SqlDbType.Int).Value = this.Id;
                         //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
 
@@ -302,10 +226,55 @@ namespace Estoque.Models
             return ret;
         }
 
-        public string RecuperarStringNomePerfis()
+        //fazer carregar os checked box => vindo da base de dados
+        public void CarregarUsuarios()
         {
+            this.Usuarios.Clear();
+            //vamos
+            using (var conexao = new SqlConnection())
+            {
+                //Criar a minha conxeção//principal
+                conexao.ConnectionString = ConfigurationManager.ConnectionStrings["real"].ConnectionString;
+                conexao.Open();
+                //agora vou dar o comando
+                using (var comando = new SqlCommand())
+                {
+                    
+                    comando.Connection = conexao;
+                    comando.CommandText =
+                        //com está query eu obtenho o usuario de cada perfil
+                        "select u.* " + 
+                        "from perfil_usuario pu, usuario u " +
+                        " where (pu.id_perfil = @id_perfil) and (pu.id_usuario = u.id) ";
 
-            var ret = string.Empty;
+                    comando.Parameters.Add("@id_perfil", SqlDbType.Int).Value = this.Id;
+                      
+                    var reader = comando.ExecuteReader(); 
+                    while (reader.Read())
+                    {
+                        //RESUMINDO TUDO QUE EU PEGAR DO BANCO DE DADOS ATRAVES DA QUERY ELA VAI POPULAR E ME RETORNAR =>ret
+                        this.Usuarios.Add(new UsuarioModel
+                        {
+                            //estou fazendo uma conversão de tipo => reader retorna o objeto e eu tenho que pegar o tipo especific n setagem
+                            Id = (int)reader["id"],
+                            Nome = (string)reader["nome"],
+                            Login = (string)reader["login"]
+                        });
+                    }
+
+                }
+            }
+            //agor faço o retorno com o usuario encontrado. 
+           
+            //vamos
+     }
+
+
+        //Trazendo listagem de Perfil
+        //TRAZENDO LISTA DE PERFIL LÁ DO BANCO DE DADOS....
+        public static List<PerfilModel> RecuperarListaAtivos()
+        {
+            var ret = new List<PerfilModel>();
 
             using (var conexao = new SqlConnection())
             {
@@ -315,32 +284,35 @@ namespace Estoque.Models
                 //agora vou dar o comando
                 using (var comando = new SqlCommand())
                 {
-
+                   
                     comando.Connection = conexao;
                     //Aqui eu vou definir o meu comando o que vou execultar no banco de dados. Vou fazer a minha query
                     //montando query sql => se o usuario digitado se encontra no banco de dados
                     //Esta fazendo uma consulta e (trazendo ou recuperando) todos as informações do banco de dados oredenado por (nome)
                     comando.CommandText = string.Format(
-                        "select p.nome " +
-                        "from perfil_usuario pu , perfil p " +
-                        "where (pu.id_usuario = @id_usuario) and (pu.id_perfil = p.id) and (p.ativo = 1)");
-
-                    comando.Parameters.Add("@id_usuario", SqlDbType.Int).Value = this.Id;
-
+                        "select * from perfil where ativo=1 order by nome");
+                     
                     var reader = comando.ExecuteReader(); //este (reader) esta recebendo a execução
                     //while => enquanto tiver algo a ser lido
-                    //para cada item que for lido eu estou incluido um objeto UsuarioModel
+                    //para cada item que for lido eu estou incluido um objeto GrupoProdutoModel
                     while (reader.Read())
                     {
-                        //RESUMINDO TUDO QUE EU PEGAR DO BANCO DE DADOS ATRAVES DA QUERY ELA VAI POPULAR E ME RETORNAR =>ret                           
-                        ret += (ret != string.Empty ? ";" : string.Empty) + (string)reader["nome"];
-                        //TODO Senha 
+                        //RESUMINDO TUDO QUE EU PEGAR DO BANCO DE DADOS ATRAVES DA QUERY ELA VAI POPULAR E ME RETORNAR =>ret
+                        ret.Add(new PerfilModel
+                        {
+                            //estou fazendo uma conversão de tipo => reader retorna o objeto e eu tenho que pegar o tipo especific n setagem
+                            Id = (int)reader["id"],
+                            Nome = (string)reader["nome"],
+                            Ativo = (bool)reader["ativo"]
+                        });
                     }
-                }
 
+                }
             }
             //agor faço o retorno com o usuario encontrado. 
             return ret;
         }
+
+
     }
 }

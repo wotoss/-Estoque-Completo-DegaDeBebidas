@@ -7,12 +7,12 @@ using System.Web.Mvc;
 
 namespace Estoque.Controllers
 {
+    [Authorize(Roles = "Gerente, Administrador, Operador")]
     public class CadGrupoProdutoController : Controller
     {
         private const int _quanMaxLinhasPorPagina = 5;
 
         //Ele já esta trazendo do banco de dados através do método RecuperarLista();
-        [Authorize]
         public ActionResult Index()
 
         {
@@ -41,7 +41,6 @@ namespace Estoque.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public JsonResult GrupoProdutoPagina(int pagina, int tamPag)
         {
@@ -53,7 +52,6 @@ namespace Estoque.Controllers
 
         //Neste estou recuperando o produto pelo Id
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public JsonResult RecuperarGrupoProduto(int id)
         {
@@ -62,7 +60,7 @@ namespace Estoque.Controllers
 
         //O meu método ExcluirPeloId() faz todo o processo de verificação eu apenas passo na controller.
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Gerente, Administrativo")]
         [ValidateAntiForgeryToken]
         public JsonResult ExcluirGrupoProduto(int id)
         {
@@ -72,7 +70,6 @@ namespace Estoque.Controllers
 
         //Salvar  e Editar no mesmo método
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public JsonResult SalvarGrupoProduto(GrupoProdutoModel model)
         {
