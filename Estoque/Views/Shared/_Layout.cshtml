@@ -1,12 +1,13 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Controle de Estoque</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/sweetalert2.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -32,15 +33,15 @@
                             <ul class="dropdown-menu">
                                 <!--1 Inicio (texto) 2 (Action) 3 Home (Controller)-->
                                 <li>@Html.ActionLink("Grupos de produtos", "Index", "CadGrupoProduto")</li>
-                                <li>@Html.ActionLink("Marca de produtos", "MarcaProduto", "Cadastro")</li>
-                                <li>@Html.ActionLink("Locais de armazenamento", "LocalProduto", "Cadastro")</li>
+                                <li>@Html.ActionLink("Marca de produtos", "Index", "CadMarcaProduto")</li>
+                                <li>@Html.ActionLink("Locais de armazenamento", "Index", "CadLocalArmazenamento")</li>
                                 <li>@Html.ActionLink("Unidade de Medida", "Index", "CadUnidadeMedida")</li>
                                 <li>@Html.ActionLink("Produtos", "Produto", "Cadastro")</li>
                                 <li class="nav-divider"></li><!--Dividi os grupos do submenu através de uma liha-->
-                                <li>@Html.ActionLink("Países", "Pais", "Cadastro")</li>
-                                <li>@Html.ActionLink("Estados", "Estado", "Cadastro")</li>
-                                <li>@Html.ActionLink("Cidades", "Cidade", "Cadastro")</li>
-                                <li>@Html.ActionLink("Fornecedores", "Fornecedor", "Cadastro")</li>
+                                <li>@Html.ActionLink("Países", "Index", "CadPais")</li>
+                                <li>@Html.ActionLink("Estados", "Index", "CadEstado")</li>
+                                <li>@Html.ActionLink("Cidades", "Index", "CadCidade")</li>
+                                <li>@Html.ActionLink("Fornecedores", "Index", "CadFornecedor")</li>
                                 <li class="nav-divider"></li><!--Dividi os grupos do submenu através de uma liha-->
                                 <li>@Html.ActionLink("Perfis de Usuário", "Index", "CadPerfil")</li>
                                 <li>@Html.ActionLink("Usuários", "Index", "CadUsuario")</li>
@@ -90,19 +91,19 @@
                     using (Html.BeginForm("LogOff", "Conta", FormMethod.Post, new { id = "logoffForm", @class = "" }))
                     {
                         <!--Este menu fica alinhado a direita-->
-                      <ul class="nav navbar-nav navbar-right">
-                         <!--1 Inicio (texto) 2 (Action) 3 Home (Controller)-->
-                         <li>@Html.ActionLink("Sobre", "Sobre", "Home")</li>
-                         <li><a href="#">Olá @User.Identity.Name</a></li><!--Esta buscando o nome do Usuario com Identity-->
-  
-                          <li><a href="javascript:document.getElementById('logoffForm').submit()">Sair</a></li>
-                      </ul>
-                       }
-                        
+                        <ul class="nav navbar-nav navbar-right">
+                            <!--1 Inicio (texto) 2 (Action) 3 Home (Controller)-->
+                            <li>@Html.ActionLink("Sobre", "Sobre", "Home")</li>
+                            <li><a href="#">Olá @User.Identity.Name</a></li><!--Esta buscando o nome do Usuario com Identity-->
+
+                            <li><a href="javascript:document.getElementById('logoffForm').submit()">Sair</a></li>
+                        </ul>
+                    }
+
                 }
                 else
                 {
-                     <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right">
                         <!--1 Inicio(texto) 2 (Action) 3 Home(Controller)-->
                         <li>@Html.ActionLink("Login", "Login", "Conta")</li>
                     </ul>
@@ -114,12 +115,13 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Controle de Estoque</p>
+            <p>&copy; @DateTime.Now.Year - Adega Altas Horas</p>
         </footer>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/Scripts/sweetalert2.min.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

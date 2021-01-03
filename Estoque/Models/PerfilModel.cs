@@ -184,43 +184,92 @@ namespace Estoque
                 //Criar a minha conxeção
                 conexao.ConnectionString = ConfigurationManager.ConnectionStrings["real"].ConnectionString;
                 conexao.Open();
-                //agora vou dar o comando
-                using (var comando = new SqlCommand())
+
+                //vamos fazer uma transação
+                using (var transacao = conexao.BeginTransaction())
                 {
 
-                    comando.Connection = conexao;
-                    if (model == null)
+                    //agora vou dar o comando
+                    using (var comando = new SqlCommand())
                     {
-                        //Query vai ter o Id com parametro qualquer{0} para fazer a recebendo id passado
-                        comando.CommandText = "insert into perfil (nome, ativo) values (@nome, @ativo); select convert(int, scope_identity())";
-                        //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
-                        comando.Parameters.Add("@nome", SqlDbType.VarChar).Value = this.Nome;
-                        comando.Parameters.Add("@ativo", SqlDbType.VarChar).Value = (this.Ativo ? 1 : 0);
 
-                        //select convert(int, scoped_identity()) =>  esta função que estou usando na query me retorna o ultimo valor que foi inserido no banco
-                        //LEMBRANDO QUE O SCALAR ME RETONA UM OBJETO.LOGO EU CONVERTO PARA INTEIRO.
-                        ret = (int)comando.ExecuteScalar();
-                    }
+                        comando.Connection = conexao;
+                        comando.Transaction = transacao; //neste comando nos precisamos indicar a transação, que estamos trabalhando
 
-                    //SE RECUPEROU O ID DO BANCO DE DADOS EU VOU EDITAR || ALTERAR
-                    else
-                    {
-                        //COLOQUE PARAMETERS E USEI @NOME NAS QUERY PARA EVITAR SQL INJECT
-                        comando.CommandText = "update perfil set nome=@nome, ativo=@ativo where id =@id";
-
-                        comando.Parameters.Add("@nome", SqlDbType.VarChar).Value = this.Nome;
-                        comando.Parameters.Add("@ativo", SqlDbType.VarChar).Value = this.Ativo;
-                        comando.Parameters.Add("@id", SqlDbType.Int).Value = this.Id;
-                        //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
-
-                        //LEMBRANDO QUE ExecuteNonQuery => ELE EXECULTA E RETORNA UM INTEIRO.."por isto eu faço a validação (maior 0) Ele esta fazendo a atualização"
-                        if (comando.ExecuteNonQuery() > 0)
+                        if (model == null)
                         {
-                            //Peço para retornar o Id
-                            ret = this.Id;
+                            //Query vai ter o Id com parametro qualquer{0} para fazer a recebendo id passado
+                            comando.CommandText = "insert into perfil (nome, ativo) values (@nome, @ativo); select convert(int, scope_identity())";
+                            //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
+                            comando.Parameters.Add("@nome", SqlDbType.VarChar).Value = this.Nome;
+                            comando.Parameters.Add("@ativo", SqlDbType.VarChar).Value = (this.Ativo ? 1 : 0);
+
+                            //select convert(int, scoped_identity()) =>  esta função que estou usando na query me retorna o ultimo valor que foi inserido no banco
+                            //LEMBRANDO QUE O SCALAR ME RETONA UM OBJETO.LOGO EU CONVERTO PARA INTEIRO.
+                            ret = (int)comando.ExecuteScalar();
+                        }
+
+                        //SE RECUPEROU O ID DO BANCO DE DADOS EU VOU EDITAR || ALTERAR
+                        else
+                        {
+                            //COLOQUE PARAMETERS E USEI @NOME NAS QUERY PARA EVITAR SQL INJECT
+                            comando.CommandText = "update perfil set nome=@nome, ativo=@ativo where id =@id";
+
+                            comando.Parameters.Add("@nome", SqlDbType.VarChar).Value = this.Nome;
+                            comando.Parameters.Add("@ativo", SqlDbType.VarChar).Value = this.Ativo;
+                            comando.Parameters.Add("@id", SqlDbType.Int).Value = this.Id;
+                            //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
+
+                            //LEMBRANDO QUE ExecuteNonQuery => ELE EXECULTA E RETORNA UM INTEIRO.."por isto eu faço a validação (maior 0) Ele esta fazendo a atualização"
+                            if (comando.ExecuteNonQuery() > 0)
+                            {
+                                //Peço para retornar o Id
+                                ret = this.Id;
+                            }
                         }
                     }
-                }
+                    //Estamos inserindo uma nova transação
+                    if (this.Usuarios != null && this.Usuarios.Count > 0)
+                    {
+                        //agora vou dar o comando
+                        using (var comandoExclusaoPerfilUsuario = new SqlCommand())
+                        {
+
+                            comandoExclusaoPerfilUsuario.Connection = conexao;
+                            comandoExclusaoPerfilUsuario.Transaction = transacao; //neste comando nos precisamos indicar a transação, que estamos trabalhando
+                                                                                  //Query vai ter o Id com parametro qualquer{0} para fazer a recebendo id passado
+                            comandoExclusaoPerfilUsuario.CommandText = "delete from perfil_usuario where (id_perfil = @id_perfil)";
+                            //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
+                            comandoExclusaoPerfilUsuario.Parameters.Add("@id_perfil", SqlDbType.Int).Value = this.Id;
+
+                            comandoExclusaoPerfilUsuario.ExecuteScalar();
+                        }
+                        //neste if eu verifico se o Id do [0] primeiro usuarios e diferente de -1. A logica é se ele for diferente eu tenho um usuario e quero incluir.
+                        //se for menor eu só queria excluir. fico na ação de cima.
+                        if (this.Usuarios[0].Id != -1) { 
+                            //estou fazendo um foreach e  para cada um dos elementos vou dar um insert...
+                            foreach (var usuario in this.Usuarios)
+                            {
+                                //Com esta instrução vamos remover o que já estava lá
+                                using (var usuarioInclusaoPerfilUsuario = new SqlCommand())
+                                {
+
+                                    usuarioInclusaoPerfilUsuario.Connection = conexao;
+                                    usuarioInclusaoPerfilUsuario.Transaction = transacao; //neste comando nos precisamos indicar a transação, que estamos trabalhando
+
+                                    usuarioInclusaoPerfilUsuario.CommandText = "insert into perfil_usuario (id_perfil, id_usuario) values (@id_perfil, @id_usuario)";
+                                    //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
+                                    usuarioInclusaoPerfilUsuario.Parameters.Add("@id_perfil", SqlDbType.Int).Value = this.Id;
+                                    usuarioInclusaoPerfilUsuario.Parameters.Add("@id_usuario", SqlDbType.Int).Value = usuario.Id;
+
+                                    usuarioInclusaoPerfilUsuario.ExecuteScalar();
+                                }
+                            }
+                        }//if [0] da validação
+                     } //if 
+                    transacao.Commit(); //inserramento da transação
+                }//transacao
+               
             }
             //agor faço o retorno com o usuario encontrado. 
             return ret;

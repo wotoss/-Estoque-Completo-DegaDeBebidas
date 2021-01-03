@@ -76,7 +76,11 @@ $(document).on('click', '#btn_incluir', function () {
                 //estou retornando os dados pela função de Post
                 abrir_form(response)
             }
-        });
+        })
+            //Quando houver um erro
+            .fail(function () {
+                swal('Aviso', 'Não foi possivel recuperar as informações ! Tente novamente em instantes.', 'warning');
+            });
     })
 
 
@@ -109,9 +113,19 @@ $(document).on('click', '#btn_incluir', function () {
                 if (result) {
                     $.post(url, add_anti_forgery_token(param), function (response) {
                         if (response) {
-                            tr.remove();
+                            tr.remove();//desta forma foi excluida a linha no back ende
+                            var quantidade = $('#grid_cadastro > tbody > tr').length; //desta forma eu consigo ver a quantidade de linha que existe no gride (length)
+                            if (quantidade == 0) {//Se o tamanho ou quantidade == 0. Quero dizer não tem mais linha. 
+                                $('#grid_cadastro').addClass('invisivel');//ai eu adiciono a class invisivel "Quem vem com a mensagem NENHUM REGISTRO"
+                                $('#mensagem_grid').removeClass('invisivel');//Se ainda tiver linha no gride eu removo a classe e mostro os item as linhas normalmente
+                            }
                         }
-                    });
+                    })
+                
+            //Quando houver um erro
+            .fail(function () {
+                swal('Aviso', 'Não foi possivel excluir ! Tente novamente em instantes.', 'warning');
+            });
                 }
             }
         });
@@ -133,6 +147,8 @@ $(document).on('click', '#btn_incluir', function () {
                         //Eu passo ele para criar a linha.
                         linha = criar_linha_grid(param);
                     table.append(linha);
+                    $('#grid_cadastro').removeClass('invisivel'); //esta removendo a classe invisivel 
+                    $('#mensagem_grid').addClass('invisivel'); //esta adicionando a classe invisivel
                     //Editar || alterar
                 } else {
                     var linha = $('#grid_cadastro').find('tr[data-id=' + param.Id + ']').find('td');
@@ -153,15 +169,21 @@ $(document).on('click', '#btn_incluir', function () {
                 $('#msg_mensagem_aviso').show();
                 $('#msg_erro').hide();
             }
-        });
+        })
+            //Quando houver um erro
+            .fail(function () {
+                swal('Aviso', 'Não foi possivel salvar as informações ! Tente novamente em instantes.', 'warning');
+            });
     })
 
+    //Este page-item é a paginação
     .on('click', '.page-item', function () {
         var btn = $(this),
+            filtro = $('#txt_filtro'),
             tamPag = $('#ddl_tam_pag').val(),
             pagina = btn.text(),
             url = url_page_click,
-            param = { 'pagina': pagina, 'tamPag': tamPag };
+            param = { 'pagina': pagina, 'tamPag': tamPag, 'filtro': filtro.val() };
 
         //post é o meu envio o que vou passa ao back end => GrupoProdutoPagina
         $.post(url, add_anti_forgery_token(param), function (response) {
@@ -169,25 +191,39 @@ $(document).on('click', '#btn_incluir', function () {
                 var table = $('#grid_cadastro').find('tbody');
                 //vou limpar a tabela
                 table.empty();
-                //no for eu já populo a minha lista => montando a nova paginação
-                for (var i = 0; i < response.length; i++) {
-                    table.append(criar_linha_grid(response[i]));
+                if (response.length > 0) {
+                    $('#grid_cadastro').removeClass('invisivel'); //esta removendo a classe invisivel 
+                    $('#mensagem_grid').addClass('invisivel'); //esta adicionando a classe invisivel
+                    //no for eu já populo a minha lista => montando a nova paginação
+                    for (var i = 0; i < response.length; i++) {
+                        table.append(criar_linha_grid(response[i]));
+                    }
+                }
+                else {
+                    $('#grid_cadastro').addClass('invisivel'); //esta removendo a classe invisivel 
+                    $('#mensagem_grid').removeClass('invisivel'); //esta adicionando a classe invisivel
                 }
                 //para remover e adicionar o item selecionado
                 btn.siblings().removeClass('active');
                 btn.addClass('active');
             }
-        });
+        })
+            //Quando houver um erro
+            .fail(function () {
+                swal('Aviso', 'Não foi possivel recuperar as informações ! Tente novamente em instantes.', 'warning');
+            });
 
     })
 
+    // Este ddl_tam_pag é o seletor que mudamos de pagina
     //QUANDO CLIKAR NO SELECT MUDAR A PAGINA
     .on('change', '#ddl_tam_pag', function () {
         var ddl = $(this),
+            filtro = $('#txt_filtro'),
             tamPag = ddl.val(),
             pagina = 1,
             url = url_tam_pag_change,
-            param = { 'pagina': pagina, 'tamPag': tamPag };
+            param = { 'pagina': pagina, 'tamPag': tamPag, 'filtro': filtro.val() };
 
 
         //post é o meu envio o que vou passa ao back end => GrupoProdutoPagina
@@ -196,16 +232,73 @@ $(document).on('click', '#btn_incluir', function () {
                 var table = $('#grid_cadastro').find('tbody');
                 //vou limpar a tabela
                 table.empty();
-                //no for eu já populo a minha lista => montando a nova paginação
-                for (var i = 0; i < response.length; i++) {
-                    table.append(criar_linha_grid(response[i]));
+                
+                if (response.length > 0) {
+                    $('#grid_cadastro').removeClass('invisivel'); //esta removendo a classe invisivel 
+                    $('#mensagem_grid').addClass('invisivel'); //esta adicionando a classe invisivel
+                    //no for eu já populo a minha lista => montando a nova paginação
+                    for (var i = 0; i < response.length; i++) {
+                        table.append(criar_linha_grid(response[i]));
+                    }
+                }
+                else {
+                    $('#grid_cadastro').addClass('invisivel'); //esta removendo a classe invisivel 
+                    $('#mensagem_grid').removeClass('invisivel'); //esta adicionando a classe invisivel
                 }
                 //para remover e adicionar o item selecionado
                 ddl.siblings().removeClass('active');
                 ddl.addClass('active');
             }
-        });
+        })
+            //Quando houver um erro
+            .fail(function () {
+                swal('Aviso', 'Não foi possivel recuperar as informações ! Tente novamente em instantes.', 'warning');
+            });
+
+    })
+
+//VAMOS MONTAR A REQUISIÇÃO ATRAVES DE JSON => REQUISIÇÃO DO FRONT END PARA O BACK END
+ 
+    .on('keyup', '#txt_filtro', function () { //keyup => pressionar um tecla
+        var filtro = $(this),
+            ddl = $('#ddl_tam_pag'),//Estou buscando o nosso droopdown
+            tamPag = ddl.val(),
+            pagina = 1,
+            url = url_filtro_change, //lá no meu CadGrupoProduto arquivo Index. cshtml esta a minha url no final da pagina... E a minha url, vai até a controller
+            param = { 'pagina': pagina, 'tamPag': tamPag, 'filtro': filtro.val() }; //eu vou enviar estes parametros para o meu back-end
+
+
+        //post é o meu envio o que vou passa ao back end => GrupoProdutoPagina
+        $.post(url, add_anti_forgery_token(param), function (response) {
+            if (response) {
+                var table = $('#grid_cadastro').find('tbody');
+                //vou limpar a tabela
+                table.empty();
+
+                if (response.length > 0) {
+                    $('#grid_cadastro').removeClass('invisivel'); //esta removendo a classe invisivel 
+                    $('#mensagem_grid').addClass('invisivel'); //esta adicionando a classe invisivel
+                    //no for eu já populo a minha lista => montando a nova paginação
+                    for (var i = 0; i < response.length; i++) {
+                        table.append(criar_linha_grid(response[i]));
+                    }
+                }
+                else {
+                    $('#grid_cadastro').addClass('invisivel'); //esta removendo a classe invisivel 
+                    $('#mensagem_grid').removeClass('invisivel'); //esta adicionando a classe invisivel
+                }
+               
+                //para remover e adicionar o item selecionado
+                ddl.siblings().removeClass('active');
+                ddl.addClass('active');
+            }
+        })
+            //Quando houver um erro
+            .fail(function () {
+                swal('Aviso', 'Não foi possivel recuperar as informações ! Tente novamente em instantes.', 'warning');
+            });
 
     });
+
 
 

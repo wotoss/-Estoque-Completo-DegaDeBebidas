@@ -72,7 +72,7 @@ namespace Estoque.Controllers.Cadastro
             //Salvar  e Editar no mesmo método
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public JsonResult SalvarPerfil(PerfilModel model)
+            public JsonResult SalvarPerfil(PerfilModel model, List<int> idUsuarios)
             {
                 var resultado = "Ok";
                 var mensagens = new List<string>();
@@ -87,6 +87,23 @@ namespace Estoque.Controllers.Cadastro
                 }
                 else
                 {
+                //o meu array estava parando no modelstate na validação. Como solução eu deixo ele passar e só ai eu coloco a lista do array. Em uma nova instância
+                model.Usuarios = new List<UsuarioModel>();
+                //vamos fazer uma validação com este if
+                if(idUsuarios == null || idUsuarios.Count == 0)
+                {
+                    //Se for nulo ou igual a zero  eu crio um usuario com id menos 1
+                    model.Usuarios.Add(new UsuarioModel() { Id = -1 });
+                }
+                else
+                {
+                    foreach (var id in idUsuarios)
+                    {
+                        model.Usuarios.Add(new UsuarioModel() { Id = id });
+                    }
+                }
+                
+
                     try
                     {
                         var id = model.Salvar();

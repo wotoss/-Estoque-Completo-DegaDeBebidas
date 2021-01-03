@@ -2,6 +2,7 @@
 @{
     Layout = "~/Views/Shared/_Cadastro.cshtml";
     ViewBag.Title = "Grupo de Produtos";
+    ViewBag.Lista = Model;
 }
 @section Styles {
     <link href="~/Content/bootstrap-select.css" rel="stylesheet" />
@@ -77,6 +78,7 @@
         var url_confirmar = '@Url.Action("SalvarGrupoProduto", "CadGrupoProduto")';
         var url_page_click = '@Url.Action("GrupoProdutoPagina", "CadGrupoProduto")';
         var url_tam_pag_change = '@Url.Action("GrupoProdutoPagina", "CadGrupoProduto")';
+        var url_filtro_change = '@Url.Action("GrupoProdutoPagina", "CadGrupoProduto")'; //LLá no js no click é feita  requisição onde envia para esta url => ai aciona para o back-end  ação GrupoProdutoPagina
         var url_alterar = '@Url.Action("RecuperarGrupoProduto", "CadGrupoProduto")';
     </script>
     <script src="~/Scripts/Cadastro/GrupoProduto.js"></script>
