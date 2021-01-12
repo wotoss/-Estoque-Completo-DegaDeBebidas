@@ -9,15 +9,15 @@
 @section Styles {
     <link href="~/Content/bootstrap-select.css" rel="stylesheet" />
     <link href="~/Content/Cadastro/Cidade.css" rel="stylesheet" />
-    }
+}
 @section TituloGrid{
     <th>Nome</th>
     <th>Ativo</th>
     <th>Ação</th>
-    }
+}
 
 @section LinhaGrid{
-    @{ 
+    @{
         var linha = 0;
         foreach (var item in Model)
         {
@@ -40,8 +40,8 @@
                 break;
             }
         }
-      }
-  }
+    }
+}
 
 @section CamposCadastro{
     <div class="row">
@@ -62,7 +62,7 @@
         <div class="form-group">
             @Html.Label("ddl_estado", "Estado", new { @class = "col-md-3 control-label" })
             <div class="col-md-9">
-                @Html.DropDownList("ddl_estado", new SelectList(ViewBag.Estados, "Id", "Nome"), new { @class = "form-control" })
+                @Html.DropDownList("ddl_estado", new SelectList(""), new { @class = "form-control" })
             </div>
         </div>
 
@@ -73,18 +73,47 @@
             </div>
         </div>
     </div>
-    }
+}
 
 @section Scripts {
     <script src="~/Scripts/bootstrap-select.js"></script>
     <script>
         var tituloPagina = '@ViewBag.Title';
-        var url_excluir = '@Url.Action("Excluir", "CadEstado")';
-        var url_confirmar = '@Url.Action("SalvarEstado", "CadEstado")';
-        var url_page_click = '@Url.Action("EstadoPagina", "CadEstado")';
-        var url_tam_pag_change = '@Url.Action("EstadoPagina", "CadEstado")';
-        var url_alterar = '@Url.Action("RecuperarEstado", "CadEstado")';
-    </script>
-    <script src="~/Scripts/Cadastro/Estado.js"></script>
-    }
+        var url_excluir = '@Url.Action("ExcluirCidade", "CadCidade")';
+        var url_confirmar = '@Url.Action("SalvarCidade", "CadCidade")';
+        var url_page_click = '@Url.Action("CidadePagina", "CadCidade")';
+        var url_tam_pag_change = '@Url.Action("CidadePagina", "CadCidade")';
+        var url_alterar = '@Url.Action("RecuperarCidade", "CadCidade")';
+        var url_listar_estados = '@Url.Action("RecuperarEstadosDoPais", "CadEstado")';
+        var linhas = [];
 
+         @{
+            var linha = 0;
+            foreach (var item in Model)
+            {
+                linha++;
+                if (linha <= ViewBag.QuantMaxLinhasPorPagina)
+                {
+                    @:linhas.push(@Html.Raw(Json.Encode(item)));
+                                                                        }
+                else
+                {
+                    break;
+                }
+            }
+        }
+    </script>
+    <script id="template-grid" type="x-tmpl-mustache">
+        <tr data-id="{{ Id }}">
+            <td>{{ Nome }}</td>
+            <td>{{ NomePais }}</td>
+            <td>{{ NomeEstado }}</td>
+            <td>{{ #Ativo }}SIM{{ /Ativo }}{{ ^Ativo }}NÃO{{ /Ativo }}</td>
+            <td>
+                <a class="btn btn-primary btn-alterar" role="button"><i class="glyphicon glyphicon-pencil"></i> Alterar</a>
+                <a class="btn btn-danger btn-excluir" role="button"><i class="glyphicon glyphicon-trash"></i> Excluir</a>
+            </td>
+        </tr>
+    </script>
+    <script src="~/Scripts/Cadastro/Cidade.js"></script>
+}

@@ -8,13 +8,25 @@ function add_anti_forgery_token(data) {
     return data;
 }
 
+
+//Esta forma estou fazendo uma LISTA com Vanilla JavaScript
 function formatar_mensagem_aviso(mensagens) {
-    var ret = '';
-    for (var i = 0; i < mensagens.length; i++) {
-        //vou criar uma lista não ordenada
-        ret += '<li>' + mensagens[i] + '</li>';
-    }
-    return '<ul>' + ret + '</ul>';
+    //var ret = '';
+    //for (var i = 0; i < mensagens.length; i++) {
+    //    //vou criar uma lista não ordenada
+    //    ret += '<li>' + mensagens[i] + '</li>';
+    //}
+    //return '<ul>' + ret + '</ul>';
+
+    //usando mustache
+    var template =
+        '<lu>' +
+        '{{ #. }}' + //para cada item
+        '<li> {{ . }} </li>' + //cada um terá uma linha li
+        '{{ /. }}' +
+        '</lu>';
+    //aqui ele aplica e faz a renderização
+    return Mustache.render(template, mensagens); 
 }
 
 
@@ -31,7 +43,8 @@ function abrir_form(dados) {
 
     bootbox.dialog({
         title: 'Cadastro de ' + tituloPagina,
-        message: modal_cadastro
+        message: modal_cadastro,
+        className: 'dialogo',
     })
         .on('shown.bs.modal', function () {
             modal_cadastro.show(0, function () {
@@ -46,15 +59,23 @@ function abrir_form(dados) {
 
 //Criando Linhas
 function criar_linha_grid(dados) {
-    var ret =
-        '<tr data-id=' + dados.Id + '>' +
-        set_dados_grid(dados) +
-        '<td>' +
-        '<a class="btn btn-primary btn-alterar" role="button" style="margin-right: 3px"><i class="glyphicon glyphicon-pencil"></i> Editar</a>' +
-        '<a class="btn btn-danger btn-excluir" role="button"><i class="glyphicon glyphicon-trash"></i> Excluir</a>' +
-        '</td>' +
-        '</tr>';
-    return ret;
+
+    //FEITO E FUNCIONANDO EM JS VANILLA
+    //var ret =
+    //    '<tr data-id=' + dados.Id + '>' +
+    //    set_dados_grid(dados) +
+    //    '<td>' +
+    //    '<a class="btn btn-primary btn-alterar" role="button" style="margin-right: 3px"><i class="glyphicon glyphicon-pencil"></i> Editar</a>' +
+    //    '<a class="btn btn-danger btn-excluir" role="button"><i class="glyphicon glyphicon-trash"></i> Excluir</a>' +
+    //    '</td>' +
+    //    '</tr>';
+    //return ret;
+
+    //USANDO MUSTACHE
+    var template = $('#template-grid').html(); //estou criando aqui #template-grid e quero o todo o .html() dele
+
+    return Mustache.render(template, dados)
+
 }
 
 $(document).on('click', '#btn_incluir', function () {

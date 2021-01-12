@@ -17,11 +17,13 @@ namespace Estoque.Models
         [MaxLength(30, ErrorMessage = "O nome pode ter no máximo 30 caracteres")]
         public string Nome { get; set; }
 
-        [Required(ErrorMessage = "Preencha o código internacional.")]
-        [MaxLength(3, ErrorMessage = "O código internacional deve ter 3 caracteres.")]
-        public string Codigo { get; set; }
-
         public bool Ativo { get; set; }
+
+        public int IdPais { get; set; }
+
+        public int IdEstado { get; set; }
+
+        public virtual EstadoModel Estado { get; set; }
 
         public static int RecuperarQuantidade()
         {
@@ -42,7 +44,7 @@ namespace Estoque.Models
         }
 
         //Recuperar Lista 
-        public static List<CidadeModel> RecuperarLista(int pagina = 0, int tamPagina = 0, string filtro = "")
+        public static List<CidadeModel> RecuperarLista(int pagina = 0, int tamPagina = 0, string filtro = "", int idEstado = 0)
         {
             var ret = new List<CidadeModel>();
 
@@ -58,21 +60,29 @@ namespace Estoque.Models
                     var filtroWhere = "";
                     if (!string.IsNullOrEmpty(filtro))
                     {
-                        filtroWhere = string.Format(" where lower(nome) like '%{0}%'", filtro.ToLower());
+                        filtroWhere = string.Format(" (lower(c.nome) like '%{0}%') and", filtro.ToLower());
+                    }
+
+                    //Se este idEstado form maior do que zero significa que vou incluir ele no filtro...
+                    if (idEstado > 0)
+                    {
+                        filtroWhere += string.Format(" (id_estado = {0}) and", idEstado);
+
                     }
 
                     var paginacao = "";
                     if (pagina > 0 && tamPagina > 0)
                     {
-                        paginacao = string.Format(" offset {0} rows fetch next {1} rows only",
+                        paginacao = string.Format(" offset {0} rows fetch next {1} rows only ",
                             pos > 0 ? pos - 1 : 0, tamPagina);
 
                         comando.Connection = conexao;
                         comando.CommandText =
-                            "select *" +
-                            " from cidade" +
+                            "select c.*, e.id_pais" +
+                            " from cidade c, estado e" +
+                            " where" +
                             filtroWhere +
-                            "order by nome" + paginacao;
+                            " order by c.nome" + paginacao;
 
                         var reader = comando.ExecuteReader();
                         while (reader.Read())
@@ -81,7 +91,8 @@ namespace Estoque.Models
                             {
                                 Id = (int)reader["id"],
                                 Nome = (string)reader["nome"],
-                                Codigo = (string)reader["codigo"],
+                                IdEstado = (int)reader["id_estado"],
+                                IdPais = (int)reader["id_pais"],
                                 Ativo = (bool)reader["ativo"]
                             });
                         }
@@ -118,7 +129,8 @@ namespace Estoque.Models
                                 //estou fazendo uma conversão de tipo => reader retorna o objeto e eu tenho que pegar o tipo especific n setagem
                                 Id = (int)reader["id"],
                                 Nome = (string)reader["nome"],
-                                Codigo = (string)reader["codigo"],
+                                IdEstado = (int)reader["id_estado"],
+                                IdPais = (int)reader["id_pais"],
                                 Ativo = (bool)reader["ativo"]
                             };
                         }

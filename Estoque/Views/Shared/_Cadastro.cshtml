@@ -52,7 +52,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @RenderSection("LinhaGrid", true)
+                        <!--Estou pegando este <tbody> lá no meu Pais,js através do id grid_cadastro e preenchendo aqui o corpo-->
+                        @*@RenderSection("LinhaGrid", true)*@ <!--Estou removendo esta seção pois estou usando mestache agora-->
                     </tbody>
                 </table>
                 <!--montando a msg para o usuario-->
@@ -111,12 +112,12 @@
                 </div>
             </div>
         </div>
-
     </fieldset>
 </div>
 
 @section Scripts{
-
+    <!--Posicionamento é importante colocando o mustache antes, poderemos usa-lo até no CadastroBase -->
+    <script src="~/Scripts/mustache.min.js"></script>
     <script src="~/Scripts/Cadastro/CadastroBase.js"></script>
     @RenderSection("Scripts", true)
 }

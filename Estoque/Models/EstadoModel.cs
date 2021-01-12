@@ -23,6 +23,11 @@ namespace Estoque.Models
 
         public bool Ativo { get; set; }
 
+        [Required(ErrorMessage = "Selecione o país")]
+        public int IdPais { get; set; }
+
+
+
         public static int RecuperarQuantidade()
         {
             var ret = 0;
@@ -41,7 +46,7 @@ namespace Estoque.Models
             return ret;
         }
         //Recuperar Lista 
-        public static List<EstadoModel> RecuperarLista(int pagina = 0, int tamPagina = 0, string filtro = "")
+        public static List<EstadoModel> RecuperarLista(int pagina = 0, int tamPagina = 0, string filtro = "", int idPais = 0)
         {
             var ret = new List<EstadoModel>();
 
@@ -60,11 +65,19 @@ namespace Estoque.Models
                         filtroWhere = string.Format(" where lower(nome) like '%{0}%'", filtro.ToLower());
                     }
 
+                    if (idPais > 0)
+                    {   //VEJA que validação interressante pegamos o filtroWhere que busca o id_pais e dizemos que (string.IsNullOrEmpty(filtroWhere)
+                        //Se vier vazio eu vou de (where) se não vou de (and) são dois trabalho em um só..
+                        filtroWhere += (string.IsNullOrEmpty(filtroWhere) ? " where" : " and") + 
+                            string.Format(" id_pais = {0}", idPais);
+                    }
+
                     var paginacao = "";
                     if (pagina > 0 && tamPagina > 0)
                     {
                         paginacao = string.Format(" offset {0} rows fetch next {1} rows only",
                             pos > 0 ? pos - 1 : 0, tamPagina);
+
 
                         comando.Connection = conexao;
                         comando.CommandText =
