@@ -26,6 +26,9 @@ namespace Estoque.Models
         [Required(ErrorMessage = "Digite o nome")]
         public string Nome { get; set; }
 
+        [Required(ErrorMessage = "Digite o e-mail")]
+        public string Email { get; set; }
+
 
         public static UsuarioModel ValidarUsuario(string login, string senha)
         {
@@ -62,6 +65,7 @@ namespace Estoque.Models
                             Login = (string)reader["login"],
                             Senha = (string)reader["senha"],
                             Nome = (string)reader["nome"],
+                            Email =(string)reader["email"],
 
                         };
 
@@ -142,6 +146,7 @@ namespace Estoque.Models
                             Id = (int)reader["id"],
                             Nome = (string)reader["nome"],
                             Login = (string)reader["login"],
+                            Email = (string)reader["email"],
 
                             //TODO Senha 
                         });
@@ -187,8 +192,52 @@ namespace Estoque.Models
                             Id = (int)reader["id"],
                             Nome = (string)reader["nome"],
                             Login = (string)reader["login"],
+                            Email = (string)reader["email"],
+                        };
+                    }
+
+                }
+            }
+
+            //agor faço o retorno com o usuario encontrado. 
+            return ret;
+        }
 
 
+        // AGORA VAMOS RECUPERAR UM UNICO ITEM DA BASE DE DADOS LOGIN
+        public static UsuarioModel RecuperarPeloLogin(string login)
+        {
+            //Se não conseguir achar o Id ele retorna null
+            UsuarioModel ret = null;
+
+            using (var conexao = new SqlConnection())
+            {
+                //Criar a minha conxeção
+                conexao.ConnectionString = ConfigurationManager.ConnectionStrings["real"].ConnectionString;
+                conexao.Open();
+                //agora vou dar o comando
+                using (var comando = new SqlCommand())
+                {
+
+                    comando.Connection = conexao;
+                    //Query vai ter o Id com parametro qualquer{0} para fazer a recebendo id passado
+                    comando.CommandText = "select * from usuario where (login = @login)";
+                    //COLOCANDO PARAMETERS PARA EVITAR SQL INJECT
+                    comando.Parameters.Add("@login", SqlDbType.VarChar).Value = login;
+
+                    var reader = comando.ExecuteReader(); //este (reader) esta recebendo a execução
+                                                          //while => enquanto tiver algo a ser lido
+                                                          //para cada item que for lido eu estou incluido um objeto UsuarioModel
+                    if (reader.Read())
+                    {
+                        //ATRAVES D QUERY ESTA RETORNANDO UM REGISTRO DA BASE DE DADOS
+                        ret = new UsuarioModel
+                        {
+                            //estou fazendo uma conversão de tipo => reader retorna o objeto e eu tenho que pegar o tipo especific n setagem
+                            Id = (int)reader["id"],
+                            Nome = (string)reader["nome"],
+                            Login = (string)reader["login"],
+                            Email = (string)reader["email"],
                         };
                     }
 
@@ -255,9 +304,10 @@ namespace Estoque.Models
                     if (model == null)
                     {
                         //Query vai ter o Id com parametro qualquer{0} para fazer a recebendo id passado
-                        comando.CommandText = "insert into usuario (nome, login, senha) values (@nome, @login, @senha); select convert(int, scope_identity())";
+                        comando.CommandText = "insert into usuario (nome, email, login, senha) values (@nome, @email, @login, @senha); select convert(int, scope_identity())";
                         //como eu colquei no banco bit true || false então. Então para inserir eu faço a conversão passando 1 = true && 0 = false
                         comando.Parameters.Add("@nome", SqlDbType.VarChar).Value = this.Nome;
+                        comando.Parameters.Add("@email", SqlDbType.VarChar).Value = this.Email;
                         comando.Parameters.Add("@login", SqlDbType.VarChar).Value = this.Login;
                         comando.Parameters.Add("@senha", SqlDbType.VarChar).Value = CriptoHelper.HashMD5(this.Senha); //já gravar na base de dados a senha criptografada
 
@@ -272,12 +322,13 @@ namespace Estoque.Models
                     {
                         //COLOQUE PARAMETERS E USEI @NOME NAS QUERY PARA EVITAR SQL INJECT
                         comando.CommandText =
-                            "update usuario set nome=@nome, login=@login" +
+                            "update usuario set nome=@nome, email=@email, login=@login" +
                             //se a senha veio preenchida eu vou atribuir esta string (senha=@senha") : se não eu paço vazia
                             (!string.IsNullOrEmpty(this.Senha) ? ", senha=@senha" : "") +
                             " where id =@id";
 
                         comando.Parameters.Add("@nome", SqlDbType.VarChar).Value = this.Nome;
+                        comando.Parameters.Add("@email", SqlDbType.VarChar).Value = this.Email;
                         comando.Parameters.Add("@login", SqlDbType.VarChar).Value = this.Login;
 
 
@@ -342,5 +393,54 @@ namespace Estoque.Models
             //agor faço o retorno com o usuario encontrado. 
             return ret;
         }
+
+        public bool AlterarSenha(string novaSenha)
+        {
+            var ret = false;
+
+            using (var conexao = new SqlConnection())
+            {
+                conexao.ConnectionString = ConfigurationManager.ConnectionStrings["real"].ConnectionString;
+                conexao.Open();
+                using (var comando = new SqlCommand())
+                {
+                    comando.Connection = conexao;
+                    comando.CommandText = "update usuario set senha = @senha where id = @id";
+
+                    comando.Parameters.Add("@id", SqlDbType.Int).Value = this.Id;
+                    //Lembrando que estou critografando a senha com HasMD5
+                    comando.Parameters.Add("@senha", SqlDbType.VarChar).Value = CriptoHelper.HashMD5(novaSenha);
+
+                    ret = (comando.ExecuteNonQuery() > 0);
+                }
+            }
+            return ret;
+        }
+
+
+        //Vou pegar este método lá na minha ContaContoller => AlterarSenhaUsuario
+        public bool ValidarSenhaAtual(string senhaAtual)
+        {
+            var ret = false;
+
+            using (var conexao = new SqlConnection())
+            {
+                conexao.ConnectionString = ConfigurationManager.ConnectionStrings["real"].ConnectionString;
+                conexao.Open();
+                using (var comando = new SqlCommand())
+                {
+                    comando.Connection = conexao;
+                    //este select Count(*) serve para ver a quantidade de registro. Caso retorno seja maior que zero ou seja retorne algum
+                    comando.CommandText = "select Count(*) from usuario where senha = @senhaAtual and id = @id";
+                    comando.Parameters.Add("@id", SqlDbType.Int).Value = this.Id;
+                    //Lembrando que estou critografando a senha com HasMD5
+                    comando.Parameters.Add("@senhaAtual", SqlDbType.VarChar).Value = CriptoHelper.HashMD5(senhaAtual);
+
+                    ret = (comando.ExecuteNonQuery() > 0);
+                }
+            }
+            return ret;
+        }
+            
     }
 }

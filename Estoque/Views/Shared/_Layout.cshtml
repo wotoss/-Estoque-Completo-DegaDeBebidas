@@ -88,16 +88,28 @@
                     </ul>
 
                     <!--vamos criar o inicio da funcionalidade logout-->
-                    using (Html.BeginForm("LogOff", "Conta", FormMethod.Post, new { id = "logoffForm", @class = "" }))
+                    using (Html.BeginForm("LogOff", "Conta", FormMethod.Post, new { id = "logoffForm" }))
                     {
                         <!--Este menu fica alinhado a direita-->
-                        <ul class="nav navbar-nav navbar-right">
-                            <!--1 Inicio (texto) 2 (Action) 3 Home (Controller)-->
-                            <li>@Html.ActionLink("Sobre", "Sobre", "Home")</li>
-                            <li><a href="#">Olá @User.Identity.Name</a></li><!--Esta buscando o nome do Usuario com Identity-->
+                <ul class="nav navbar-nav navbar-right">
+                        <!--1 Inicio (texto) 2 (Action) 3 Home (Controller)-->
+                    <li>@Html.ActionLink("Sobre", "Sobre", "Home")</li>
+                       
+                     <li>
+                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                             <!--Aqui está o meu usuario (User.Identity.Name) Olá woto no canto da tela-->
+                             Olá @User.Identity.Name
+                             <span class="caret"></span>
+                         </a>
+                         <ul class="dropdown-menu">
+                             <!--Este (AlterarSenhaUsuario) é a minha ação dentro da controller (Conta) lá eu codifico ação-->
+                             <li>@Html.ActionLink("Alteraçãode de senha", "AlterarSenhaUsuario", "Conta")</li>
+                         </ul>
+                         
+                      </li><!--Esta buscando o nome do Usuario com Identity-->
 
-                            <li><a href="javascript:document.getElementById('logoffForm').submit()">Sair</a></li>
-                        </ul>
+                     <li><a href="javascript:document.getElementById('logoffForm').submit()">Sair</a></li>
+               </ul>
                     }
 
                 }

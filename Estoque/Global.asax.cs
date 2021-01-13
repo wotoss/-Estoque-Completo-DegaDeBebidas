@@ -29,7 +29,7 @@ namespace Estoque
                 Response.Clear();
                 Response.StatusCode = 200;
                 Response.ContentType = "application/json";
-                Response.Write("{\"Resultado\":\"AVISO\",\"Mensagens\":[\"Somente texto sem caracteres especiais pode ser enviado.\"],\"IdSalvo\":\"\"}");
+                Response.Write("{ \"Resultado\":\"AVISO\",\"Mensagens\":[\"Somente texto sem caracteres especiais pode ser enviado.\"],\"IdSalvo\":\"\"}");
                 Response.End();
             }
             //neste else não vamos retornar nada
@@ -47,31 +47,26 @@ namespace Estoque
         //AQUI EU VOU OBTER O COOKIE QUE EU CRIEI  NA CONTROLLER
         protected void Application_AuthenticateRequest(Object sender, EventArgs e)
         {
-            //para eu obter eu dou um context
             var cookie = Context.Request.Cookies[FormsAuthentication.FormsCookieName];
-
-            //Aqui eu  verifico se o meu cookie está vindo....
             if (cookie != null && cookie.Value != string.Empty)
             {
                 FormsAuthenticationTicket ticket;
                 try
                 {
-                    //O cookie vindo preenhido da controller,  ele vem Criptografado. Neste momento eu vou Decriptografar...
                     ticket = FormsAuthentication.Decrypt(cookie.Value);
                 }
                 catch
                 {
                     return;
                 }
-                //VEJA A LOGICA TODA DESTA TELA => NÓS ESTAMOS COOKIE DA CONTROLLER E TRAZENDO PARA PREENCHER O GENERICpRINCIPAL
 
-                //neste momento eu estou trazendo o meu usuario (Gerente) atráves do (UserData) lá do meu controller
-                // O ponto e virgula (';') => signnifica que tem mais de uma roles
-                var perfis = ticket.UserData.Split(';');
+                var partes = ticket.UserData.Split('|');
+                var id = Convert.ToInt32(partes[0]);
+                var perfis = partes[1].Split(';');
 
                 if (Context.User != null)
                 {
-                    Context.User = new GenericPrincipal(Context.User.Identity, perfis);
+                    Context.User = new AplicacaoPrincipal(Context.User.Identity, perfis, id);
                 }
             }
         }

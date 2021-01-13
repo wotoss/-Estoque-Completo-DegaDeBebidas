@@ -16,20 +16,22 @@
     <th>Login</th>
     <th>Ação</th>
 }
-@section LinhaGrid{
+
+
+@*@section LinhaGrid{
 
     @{
         var linha = 0;
-        <!--Fiz o bind lá em cima do meu model, agora posso fazer um foreach-->
+        Fiz o bind lá em cima do meu model, agora posso fazer um foreach
         foreach (var item in Model)
         {
-            linha++; <!--No 1º loop ele passar a ser linha 1 e assim sucessivamente. Até linha ser menor que quantide maxima-->
-            <!--paginação continuação-->
-            <!--Este if é um contador, enquanto linha form menor do que quantidade de pagina. Ele vai imprimir-->
+            linha++; No 1º loop ele passar a ser linha 1 e assim sucessivamente. Até linha ser menor que quantide maxima
+            paginação continuação
+            Este if é um contador, enquanto linha form menor do que quantidade de pagina. Ele vai imprimir
             if (linha <= ViewBag.QuantMaxLinhasPorPagina)
             {
 
-                <!--conteudo-->
+                conteudo
                 <tr data-id="@item.Id">
                     <td>@item.Nome</td>
                     <td>@item.Login</td>
@@ -38,7 +40,7 @@
                         <a class="btn btn-danger btn-excluir" role="button"><i class="glyphicon glyphicon-trash"></i> Excluir</a>
                     </td>
                 </tr>
-                <!--paginação continuação-->
+                paginação continuação
             }
             //Ele vai imprimir até a quinta linha na sexta ele dá um brezk no loop. E vi para baixo imprimir a proxima pagina
             else
@@ -49,22 +51,31 @@
         }
     }
 
-}
+}*@
 
 @section CamposCadastro {
     <div class="row">
         <!--Senha-->
         <div class="form-group">
             <div class="col-md-12">
-                @Html.Label("txt_nome", "Nome", new { @class = "col-md-3 control-label" })
+                @Html.Label("txt_nome", "Nome", new { @class = "control-label" })
 
                 @Html.TextBox("txt_nome", null, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <!--Email-->
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.Label("txt_email", "E-mail", new { @class = "control-label" })
+
+                @Html.TextBox("txt_email", null, new { @class = "form-control" })
             </div>
         </div>
         <!--Login-->
         <div class="form-group">
             <div class="col-md-12">
-                @Html.Label("txt_login", "Login", new { @class = "col-md-3 control-label" })
+                @Html.Label("txt_login", "Login", new { @class = "control-label" })
 
                 @Html.TextBox("txt_login", null, new { @class = "form-control" })
             </div>
@@ -72,13 +83,13 @@
         <!--Senha-->
         <div class="form-group">
             <div class="col-md-12">
-                @Html.Label("txt_senha", "Senha", new { @class = "col-md-3 control-label" })
+                @Html.Label("txt_senha", "Senha", new { @class = "control-label" })
 
                 @Html.TextBox("txt_senha", null, new { @class = "form-control", type = "password" })
             </div>
         </div>
 
-       
+
 
     </div><!--div form-->
 }
@@ -91,6 +102,33 @@
         var url_page_click = '@Url.Action("UsuarioPagina", "CadUsuario")';
         var url_tam_pag_change = '@Url.Action("UsuarioPagina", "CadUsuario")';
         var url_alterar = '@Url.Action("RecuperarUsuario", "CadUsuario")';
+         var linhas = [];
+        @{
+            var linha = 0;
+            foreach (var item in Model)
+            {
+                linha++;
+                if (linha <= ViewBag.QuantMaxLinhasPorPagina)
+                {
+                    @:linhas.push(@Html.Raw(Json.Encode(item)));
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+    </script>
+    <script id="template-grid" type="x-tmpl-mustache">
+        <tr data-id="{{ Id }}">
+            <td>{{ Nome }}</td>
+            <td>{{ Login }}</td>
+            <td>
+                <a class="btn btn-primary btn-alterar" role="button"><i class="glyphicon glyphicon-pencil"></i> Alterar</a>
+                <a class="btn btn-danger btn-excluir" role="button"><i class="glyphicon glyphicon-trash"></i> Excluir</a>
+            </td>
+        </tr>
+
     </script>
     <script src="~/Scripts/Cadastro/Usuario.js"></script>
 

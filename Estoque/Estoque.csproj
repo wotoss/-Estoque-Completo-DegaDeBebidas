@@ -117,6 +117,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AplicacaoPrincipal.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -140,13 +141,16 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\CriptoHelper.cs" />
+    <Compile Include="Models\AlteracaoSenhaUsuarioViewModel.cs" />
     <Compile Include="Models\CidadeModel.cs" />
+    <Compile Include="Models\EsqueciMinhaSenhaViewModel.cs" />
     <Compile Include="Models\EstadoModel.cs" />
     <Compile Include="Models\FornecedorModel.cs" />
     <Compile Include="Models\GrupoProdutoModel.cs" />
     <Compile Include="Models\LocalArmazenamentoModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\MarcaProdutoModel.cs" />
+    <Compile Include="Models\NovaSenhaViewModel.cs" />
     <Compile Include="Models\PaisModel.cs" />
     <Compile Include="Models\PerfilModel.cs" />
     <Compile Include="Models\Tipo.cs" />
@@ -241,6 +245,9 @@
     <Content Include="Views\CadCidade\Index.cshtml" />
     <Content Include="Views\CadPais\Index.cshtml" />
     <Content Include="Views\CadFornecedor\Index.cshtml" />
+    <Content Include="Views\Conta\AlterarSenhaUsuario.cshtml" />
+    <Content Include="Views\Conta\EsqueciMinhaSenha.cshtml" />
+    <Content Include="Views\Conta\RedefinirSenha.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
