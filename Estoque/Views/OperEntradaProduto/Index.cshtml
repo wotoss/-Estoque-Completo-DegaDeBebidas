@@ -1,0 +1,211 @@
+﻿@{
+    ViewBag.Title = "Entrada de produtos";
+}
+
+<style>
+    /*1º Eu pego o id = #grid, 2º depois chego na colunha => th Quanidade valor; 3º em refencia a segunda coluna.
+     *Ai eu passo o valor width: 150px;
+     */
+        
+    #grid th:nth-child(2) {
+        width: 150px;
+    }
+
+    #grid th:nth-child(3) {
+        width: 70px;
+    }
+
+    /* 1º Em id = #entrada_produtos, 2º Todas as classes .row terão as margens com esta codificação => margin: 15px 0;
+     *
+    */
+
+    #entrada_produtos .row {
+        margin: 15px 0;
+    }
+</style>
+
+<div class="row">
+    <div style="margin: 15px" class="col-md-12">
+        <div id="entrada_produtos" class="col-md-6 col-md-offset-3">
+            <h3 class="text-center">@ViewBag.Title</h3>
+            <hr />
+            <div id="msg_mensagem_aviso" class="text-danger invisivel"></div>
+            <fieldset>
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div class="col-md-6">
+                        @Html.Label("txt_data", "Data", new { @class = "control-label" })
+                        @Html.TextBox("txt_data", null, new { @class = "form-control", type = "date" })
+                    </div>
+                    <div class="col-md-6">
+                        @Html.Label("txt_numero", "Número", new { @class = "control-label" })
+                        <!--este texbox vai ficar desabilitado por causa do envento readonly-->
+                        @Html.TextBox("txt_numero", null, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <a id="btn_incluir" class="btn btn-success" role="button">
+                            <i class="glyphicon glyphicon-plus"></i> Incluir Produto
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="grid" class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Quantidade</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <!--botão alinhado á direita atraves do => text-right -->
+                    <div class="col-md-12 text-right">
+                        <a id="btn_cancelar" class="btn btn-default" role="button">
+                            <i class="glyphicon glyphicon-remove"></i> Cancelar
+                        </a>
+                        <a id="btn_salvar" class="btn btn-primary" role="button">
+                            <i class="glyphicon glyphicon-ok"></i> Salvar
+                        </a>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/mustache.min.js"></script>
+    <script src="~/Scripts/comum.js"></script>
+    <script>
+        var sequencia = 1;
+        //Com esta formatação ao inves de mostrar dd/mm/aaaa => ele mostrará a data correta 13/01/2020
+        function formatar_data(data) {
+            var dia = ('0' + data.getDate()).slice(-2);
+            var mes = ('0' + (data.getMonth() + 1)).slice(-2);
+            return data.getFullYear() + "-" + mes + "-" + dia;
+        }
+        function incluir_linha_produto() {
+            //eu passo o id => grid tbody => em seguida eu peço para o Mustache renderizar o html(). 
+            //Tambem passei como parametro a variavel sequencia veja que o valor dela se inicia acima, var sequencia = 1;
+            $('#grid tbody').append(Mustache.render($('#template-produto').html(), { Sequencia: sequencia }));
+            //logo depois eu mostro que a sequencia é a 2 com o => sequencia++; sempre acrecentando mais um
+            sequencia++;
+        }
+        function limpar_tela() {
+            $('#txt_numero').val('');
+            $('#grid tbody').empty();
+            incluir_linha_produto();
+        }
+
+        function obter_lista_entradas() {
+            var ret = [];
+            $('#grid tbody tr').each(function (index, item) {
+                var txt_quantidade = $(this).find('input'),
+                    ddl_produto = $(this).find('select'),
+                    quantidade = parseInt(txt_quantidade.val()),
+                    produto = parseInt(ddl_produto.val());
+
+                if (quantidade > 0) {
+                    ret.push({ IdProduto: produto, Quantidade: quantidade });
+                }
+            });
+            return ret;
+        }
+        //quando abrir a tela ele já faz a rederização deste template
+        $(document).ready(function () {
+            var hoje = new Date();
+            $('#txt_data').val(formatar_data(hoje));
+            limpar_tela();
+        })
+
+        .on('click', '#btn_incluir', function () {
+            incluir_linha_produto();
+        })
+
+            //SALVAR
+        .on('click', '#btn_salvar', function () {
+            var btn = $(this);
+            var lista_entradas = obter_lista_entradas();
+            if (lista_entradas.length == 0) {
+                swal('Aviso', 'Para salvar, você deve informar produtos com quantidades.', 'warning');
+            }
+            else {
+                var url = '@Url.Action("Salvar", "OperEntradaProduto")',
+                    dados = {
+                        data: $('#txt_data').val(),
+                        produtos: JSON.stringify(lista_entradas)
+                    };
+                //O QUE EU USO PARA ENVIAR AO MEU BACK-END, FAZER O POST
+                //1º URL, 2º DADOS=> FEITO ACIMA OU PARAMETROS, 3º A MINHA FUNÇÃO DE RETORNO (RESPONSE OU RESPOSTA)
+                $.post(url, add_anti_forgery_token(dados), function (response) {
+                    //VAMOS CRIAR NO MEU BACK-END O OK => E SE FOR VERDADEIRO ELE VAI ACRESCENTAR UM NUMERO
+                    if (response.OK) {
+                        $('#txt_numero').val(response.Numero);
+                        //DANDO TUDO CERTO VAMOS EXIBIR UMA MSG EM 'INFO', MAS POSERIA SER EM 'WARNING'
+                        swal('Sucesso', 'Entrada de produtos salva com sucesso.', 'info');
+                    }
+                })
+                    //SE ACASO DER ERRO NA REQUISIÇÃO, AI TENHO QUE MOSTRAR UMA MENSAGEM AQUI.
+                .fail(function () {
+                    swal('Aviso', 'Não foi possível salvar a entrada de produtos.', 'warning');
+                });
+            }
+        })
+
+        .on('click', '#btn_cancelar', function () {
+            var lista_entradas = obter_lista_entradas();
+            if (lista_entradas.length == 0 || $('#txt_numero').val() != '') {
+                limpar_tela();
+            }
+            else {
+                //AQUI TEMOS UM POPAP
+                swal({
+                    text: 'Deseja realmente cancelar a entrada dos produtos?',
+                    type: 'info',
+                    showCancelButton: true,
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    cancelButtonText: 'Não',
+                    confirmButtonClass: 'btn-primary',
+                    confirmButtonText: 'Sim'
+                }).then(function (opcao) {
+                    if (opcao.value) {
+                        limpar_tela();
+                    }
+                });
+            }
+        })
+        .on('click', '.btn_remover', function () {
+            var linha = $(this).closest('tr');
+            linha.remove();
+        });
+    </script>
+    <script id="template-produto" type="x-tmpl-mustache">
+        <tr>
+            <td>
+                <select class="form-control" id="ddl_produto_{{ Sequencia }}">
+                    @foreach (var produto in ViewBag.Produtos)
+                    {
+                        <option value="@produto.Id">@produto.Nome</option>
+                    }
+                </select>
+            </td>
+            <td>
+                <input type="number" id="txt_quantidade_{{ Sequencia }}" class="form-control" value="">
+            </td>
+            <td>
+                <a class="btn btn-warning btn_remover" role="button">
+                    <i class="glyphicon glyphicon-trash"></i>
+                </a>
+            </td>
+        </tr>
+    </script>
+}
+

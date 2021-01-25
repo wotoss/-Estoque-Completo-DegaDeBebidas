@@ -1,4 +1,8 @@
-﻿//Esta informações vem da Entidade (dados.InformaçãoDaEntidade)
+﻿//fiz uma variavel global referente a estado e cidade
+var id_estado = 0,
+    id_cidade = 0;
+
+//Esta informações vem da Entidade (dados.InformaçãoDaEntidade)
 function set_dados_form(dados) {
     $('#id_cadastro').val(dados.Id);
     $('#txt_nome').val(dados.Nome);
@@ -8,10 +12,7 @@ function set_dados_form(dados) {
     $('#txt_contato').val(dados.Contato);
     $('#txt_logradouro').val(dados.Logradouro);
     $('#txt_complemento').val(dados.Complemento);
-    $('#txt_cep').val(dados.Cep);
-    $('#ddl_pais').val(dados.IdPais);
-    $('#ddl_estado').val(dados.IdEstado);
-    $('#ddl_cidade').val(dados.IdCidade);
+    $('#txt_cep').val(dados.Cep);   
     $('#cbx_ativo').prop('checked', dados.Ativo);
     $('#cbx_pessoa_juridica').prop('checked', false);
     $('#cbx_pessoa_fisica').prop('checked', false);
@@ -26,9 +27,90 @@ function set_dados_form(dados) {
         $('#cbx_pessoa_fisica').prop('checked', true).trigger('click');
     }
 
+    var inclusao = (dados.Id == 0);
+    if (inclusao) {
+        $('#ddl_estado').empty();
+        $('#ddl_estado').prop('disable', true);
+
+        $('#ddl_cidade').empty();
+        $('#ddl_cidade').prop('disable', true);
+    } else {
+        $('#ddl_pais').val(dados.IdPais);
+        mudar_pais(dados.IdEstado, dados.IdCidade);
+    }
+
+}
+
+function mudar_pais(id_estado, id_cidade) {
+    var ddl_pais = $('#ddl_pais'), //esta vairavel será o item que foi modificado
+        id_pais = parseInt(ddl_pais.val()),//acrescentando o val() eu obtenho o valor que foi SELECIONADO na dropdown
+        ddl_estado = $('#ddl_estado'); //eu pego só o elemento o (id => #ddl_estado)
+        ddl_cidade = $('#ddl_cidade');
+    
+    if (id_pais > 0) { //vamos ver se o pais está maior do que zero ou. No caso ele foi SELECIONADO
+        var url = url_listar_estados, //estamos criando uma url => url_listar_estados
+            param = { idPais: id_pais }; //parametro que será enviado..
+
+        ddl_estado.empty();//iportante limpar  a dropdown list=> se não toda a vez selecionar ele acaba  aumentando
+        //true será desabilitado
+        ddl_estado.prop('disabled', true);
+
+        ddl_cidade.empty();
+        ddl_cidade.prop('disabled', true);
+
+        //no meu post que vai enviar eu componho de url=>url_listar_estados,  param = { idPais: id_pais }; e minha função de (resposta)
+        $.post(url, add_anti_forgery_token(param), function (response) {
+            if (response && response.length > 0) { //ele vai retornar um vetor um arra lá no back-end
+                for (var i = 0; i < response.length; i++) {
+                    ddl_estado.append('<option value=' + response[i].Id + '>' + response[i].Nome + '</option>');
+                }
+                //não será desabilitado usamos o false == MOSTRA PARA O USUARIO
+                ddl_estado.prop('disabled', false);
+            }
+            //estou criando um método sel_estado
+            sel_estado(id_estado);
+            mudar_estado(id_cidade);
+        });
+    }
+}
+
+function mudar_estado(id_cidade) {
+    var ddl_estado = $('#ddl_estado'), //esta vairavel será o item que foi modificado
+        id_estado = parseInt(ddl_estado.val()),//acrescentando o val() eu obtenho o valor que foi SELECIONADO na dropdown
+        ddl_cidade = $('#ddl_cidade'); //eu pego só o elemento o (id => #ddl_estado)
+
+    if (id_estado > 0) { //vamos ver se o pais está maior do que zero ou. No caso ele foi SELECIONADO
+        var url = url_listar_cidades, //estamos criando uma url => url_listar_estados
+            param = { idEstado: id_estado }; //parametro que será enviado..
+
+        ddl_cidade.empty();//iportante limpar  a dropdown list=> se não toda a vez selecionar ele acaba  aumentando
+        //true será desabilitado
+        ddl_cidade.prop('disabled', true);
+
+        //no meu post que vai enviar eu componho de url=>url_listar_estados,  param = { idPais: id_pais }; e minha função de (resposta)
+        $.post(url, add_anti_forgery_token(param), function (response) {
+            if (response && response.length > 0) { //ele vai retornar um vetor um arra lá no back-end
+                for (var i = 0; i < response.length; i++) {
+                    ddl_cidade.append('<option value=' + response[i].Id + '>' + response[i].Nome + '</option>');
+                }
+                //não será desabilitado usamos o false == MOSTRA PARA O USUARIO
+                ddl_cidade.prop('disabled', false);
+            }
+
+            sel_cidade(id_cidade);
+        });
+    }
+}
+
+function sel_estado(id_estado) {
+    $('#ddl_estado').val(id_estado);
     //Se for menor ou igual a zero => quer dizer se não tiver estado => inciará desabilitado
-    $('#ddl_estado').prop('disabled', dados.IdEstado <= 0 || dados.IdEstado == undefined);
-    $('#ddl_cidade').prop('disabled', dados.IdCidade <= 0 || dados.IdCidade == undefined);
+    $('#ddl_estado').prop('disabled', $('#ddl_estado option').length == 0);
+}
+
+function sel_cidade(id_cidade) {
+    $('#ddl_cidade').val(id_cidade);
+    $('#ddl_cidade').prop('disabled', $('#ddl_cidade option').length == 0);
 }
 
 
@@ -111,56 +193,12 @@ $(document)
 //METODO change USADO PARA ALTERAR
 //nome do evento (change) o nome do elemento (id #ddl_pais) logo a minha function
 $(document).on('change', '#ddl_pais', function () {
-    var ddl_pais = $(this), //esta vairavel será o item que foi modificado
-        id_pais = parseInt(ddl_pais.val()),//acrescentando o val() eu obtenho o valor que foi SELECIONADO na dropdown
-        ddl_estado = $('#ddl_estado'); //eu pego só o elemento o (id => #ddl_estado)
-
-    if (id_pais > 0) { //vamos ver se o pais está maior do que zero ou. No caso ele foi SELECIONADO
-        var url = url_listar_estados, //estamos criando uma url => url_listar_estados
-            param = { idPais: id_pais }; //parametro que será enviado..
-
-        ddl_estado.empty();//iportante limpar  a dropdown list=> se não toda a vez selecionar ele acaba  aumentando
-        //true será desabilitado
-        ddl_estado.prop('disabled', true);
-
-        //no meu post que vai enviar eu componho de url=>url_listar_estados,  param = { idPais: id_pais }; e minha função de (resposta)
-        $.post(url, add_anti_forgery_token(param), function (response) {
-            if (response && response.length > 0) { //ele vai retornar um vetor um arra lá no back-end
-                for (var i = 0; i < response.length; i++) {
-                    ddl_estado.append('<option value=' + response[i].Id + '>' + response[i].Nome + '</option>');
-                }
-                //não será desabilitado usamos o false == MOSTRA PARA O USUARIO
-                ddl_estado.prop('disabled', false);
-            }
-        });
-    }
-});
+    mudar_pais();
+})
 
 //QUANDO EU MODIFICO O PAÍS ELE VAI SER MODIFICADO
 //METODO change USADO PARA ALTERAR
 //nome do evento (change) o nome do elemento (id #ddl_estado) logo a minha function
 $(document).on('change', '#ddl_estado', function () {
-    var ddl_estado = $(this), //esta vairavel será o item que foi modificado
-        id_estado = parseInt(ddl_estado.val()),//acrescentando o val() eu obtenho o valor que foi SELECIONADO na dropdown
-        ddl_cidade = $('#ddl_cidade'); //eu pego só o elemento o (id => #ddl_estado)
-
-    if (id_estado > 0) { //vamos ver se o pais está maior do que zero ou. No caso ele foi SELECIONADO
-        var url = url_listar_cidades, //estamos criando uma url => url_listar_estados
-            param = { idEstado: id_estado }; //parametro que será enviado..
-
-        ddl_cidade.empty();//iportante limpar  a dropdown list=> se não toda a vez selecionar ele acaba  aumentando
-        //true será desabilitado
-        ddl_cidade.prop('disabled', true);
-
-        //no meu post que vai enviar eu componho de url=>url_listar_estados,  param = { idPais: id_pais }; e minha função de (resposta)
-        $.post(url, add_anti_forgery_token(param), function (response) {
-            if (response && response.length > 0) { //ele vai retornar um vetor um arra lá no back-end
-                for (var i = 0; i < response.length; i++) {
-                    ddl_cidade.append('<option value=' + response[i].Id + '>' + response[i].Nome + '</option>');
-                }
-                //não será desabilitado usamos o false == MOSTRA PARA O USUARIO
-                ddl_cidade.prop('disabled', false);
-            }
-        });
-    }
+    mudar_estado();
 });

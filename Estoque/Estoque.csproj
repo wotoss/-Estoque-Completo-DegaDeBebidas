@@ -45,6 +45,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.60.1\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -121,7 +130,6 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\CadastroController.cs" />
     <Compile Include="Controllers\Cadastro\CadCidadeController.cs" />
     <Compile Include="Controllers\Cadastro\CadEstadoController.cs" />
     <Compile Include="Controllers\Cadastro\CadFornecedorController.cs" />
@@ -130,32 +138,65 @@
     <Compile Include="Controllers\Cadastro\CadMarcaProdutoController.cs" />
     <Compile Include="Controllers\Cadastro\CadPaisController.cs" />
     <Compile Include="Controllers\Cadastro\CadPerfilController.cs" />
+    <Compile Include="Controllers\Cadastro\CadProdutoController.cs" />
     <Compile Include="Controllers\Cadastro\CadUnidadeMedidaController.cs" />
     <Compile Include="Controllers\Cadastro\CadUsuarioController.cs" />
+    <Compile Include="Controllers\Cadastro\OperInventarioController.cs" />
     <Compile Include="Controllers\ContaController.cs" />
     <Compile Include="Controllers\GraficoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OperacaoController.cs" />
+    <Compile Include="Controllers\Operacao\OperEntradaProdutoController.cs" />
+    <Compile Include="Controllers\Operacao\OperEntradaSaidaProdutoController.cs" />
+    <Compile Include="Controllers\Operacao\OperSaidaProdutoController.cs" />
     <Compile Include="Controllers\RelatorioController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\CriptoHelper.cs" />
+    <Compile Include="Migrations\202101231935322_inicial.cs" />
+    <Compile Include="Migrations\202101231935322_inicial.Designer.cs">
+      <DependentUpon>202101231935322_inicial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AlteracaoSenhaUsuarioViewModel.cs" />
-    <Compile Include="Models\CidadeModel.cs" />
+    <Compile Include="Models\Binders\EntradaSaidaProdutoViewModelModelBinder.cs" />
+    <Compile Include="Models\Domain\CidadeModel.cs" />
+    <Compile Include="Models\ContextoBD.cs" />
+    <Compile Include="Models\Domain\EntradaProdutoModel.cs" />
+    <Compile Include="Models\Domain\InventarioEstoqueModel.cs" />
+    <Compile Include="Models\Domain\SaidaProdutoModel.cs" />
+    <Compile Include="Models\EntradaSaidaProdutoViewModel.cs" />
     <Compile Include="Models\EsqueciMinhaSenhaViewModel.cs" />
-    <Compile Include="Models\EstadoModel.cs" />
-    <Compile Include="Models\FornecedorModel.cs" />
-    <Compile Include="Models\GrupoProdutoModel.cs" />
-    <Compile Include="Models\LocalArmazenamentoModel.cs" />
+    <Compile Include="Models\Domain\EstadoModel.cs" />
+    <Compile Include="Models\Domain\FornecedorModel.cs" />
+    <Compile Include="Models\Domain\GrupoProdutoModel.cs" />
+    <Compile Include="Models\ItemInventarioViewModel.cs" />
+    <Compile Include="Models\Domain\LocalArmazenamentoModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
-    <Compile Include="Models\MarcaProdutoModel.cs" />
+    <Compile Include="Models\Domain\MarcaProdutoModel.cs" />
+    <Compile Include="Models\Maps\CidadeMap.cs" />
+    <Compile Include="Models\Maps\EntradaProdutoMap.cs" />
+    <Compile Include="Models\Maps\EstadoMap.cs" />
+    <Compile Include="Models\Maps\FornecedorMap.cs" />
+    <Compile Include="Models\Maps\GrupoProdutoMap.cs" />
+    <Compile Include="Models\Maps\InventarioEstoqueMap.cs" />
+    <Compile Include="Models\Maps\LocalArmazenamentoMap.cs" />
+    <Compile Include="Models\Maps\MarcaProdutoMap.cs" />
+    <Compile Include="Models\Maps\PaisMap.cs" />
+    <Compile Include="Models\Maps\PerfilMap.cs" />
+    <Compile Include="Models\Maps\ProdutoMap.cs" />
+    <Compile Include="Models\Maps\SaidaProdutoMap.cs" />
+    <Compile Include="Models\Maps\UnidadeMedidaMap.cs" />
+    <Compile Include="Models\Maps\UsuarioMap.cs" />
     <Compile Include="Models\NovaSenhaViewModel.cs" />
-    <Compile Include="Models\PaisModel.cs" />
-    <Compile Include="Models\PerfilModel.cs" />
-    <Compile Include="Models\Tipo.cs" />
-    <Compile Include="Models\UnidadeMedidaModel.cs" />
-    <Compile Include="Models\UsuarioModel.cs" />
+    <Compile Include="Models\Domain\PaisModel.cs" />
+    <Compile Include="Models\Domain\PerfilModel.cs" />
+    <Compile Include="Models\ProdutoInventarioViewModel.cs" />
+    <Compile Include="Models\Domain\ProdutoModel.cs" />
+    <Compile Include="Models\Domain\Tipo.cs" />
+    <Compile Include="Models\Domain\UnidadeMedidaModel.cs" />
+    <Compile Include="Models\Domain\UsuarioModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -169,8 +210,10 @@
     <Content Include="Content\Cadastro\Estado.css" />
     <Content Include="Content\Cadastro\Fornecedor.css" />
     <Content Include="Content\Cadastro\GrupoProduto.css" />
+    <Content Include="Content\Cadastro\MarcaProduto.css" />
     <Content Include="Content\Cadastro\Pais.css" />
     <Content Include="Content\Cadastro\Perfil.css" />
+    <Content Include="Content\Cadastro\Produto.css" />
     <Content Include="Content\Cadastro\UnidadeMedida.css" />
     <Content Include="Content\Cadastro\Usuario.css" />
     <Content Include="Content\sweetalert2.min.css" />
@@ -189,10 +232,14 @@
     <Content Include="Scripts\Cadastro\Estado.js" />
     <Content Include="Scripts\Cadastro\Fornecedor.js" />
     <Content Include="Scripts\Cadastro\GrupoProduto.js" />
+    <Content Include="Scripts\Cadastro\LocalArmazenamento.js" />
+    <Content Include="Scripts\Cadastro\MarcaProduto.js" />
     <Content Include="Scripts\Cadastro\Pais.js" />
     <Content Include="Scripts\Cadastro\Perfil.js" />
+    <Content Include="Scripts\Cadastro\Produto.js" />
     <Content Include="Scripts\Cadastro\UnidadeMedida.js" />
     <Content Include="Scripts\Cadastro\Usuario.js" />
+    <Content Include="Scripts\comum.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -221,15 +268,10 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Sobre.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Cadastro\Fornecedor.cshtml" />
     <Content Include="Views\CadGrupoProduto\Index.cshtml" />
-    <Content Include="Views\Cadastro\LocalProduto.cshtml" />
-    <Content Include="Views\Cadastro\MarcaProduto.cshtml" />
-    <Content Include="Views\Cadastro\Produto.cshtml" />
     <Content Include="Views\CadUsuario\Index.cshtml" />
     <Content Include="Views\Grafico\EntradaSaidaMes.cshtml" />
     <Content Include="Views\Grafico\PerdaMes.cshtml" />
-    <Content Include="Views\Operacao\EntradaEstoque.cshtml" />
     <Content Include="Views\Operacao\Inventario.cshtml" />
     <Content Include="Views\Operacao\LancPerdaProduto.cshtml" />
     <Content Include="Views\Operacao\SaidaEstoque.cshtml" />
@@ -248,9 +290,14 @@
     <Content Include="Views\Conta\AlterarSenhaUsuario.cshtml" />
     <Content Include="Views\Conta\EsqueciMinhaSenha.cshtml" />
     <Content Include="Views\Conta\RedefinirSenha.cshtml" />
+    <Content Include="Views\CadProduto\Index.cshtml" />
+    <Content Include="Views\OperEntradaProduto\Index.cshtml" />
+    <Content Include="Views\OperSaidaProduto\Index.cshtml" />
+    <Content Include="Views\OperInventario\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\Imagens\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -264,6 +311,11 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202101231935322_inicial.resx">
+      <DependentUpon>202101231935322_inicial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -85,7 +85,9 @@ namespace Estoque.Controllers
             {
                 try
                 {
-                    var id = model.Salvar();
+                    var vm = model;
+                    var id = vm.Salvar();
+                    //var id = model.Salvar();
                     //SE O ID FOR MAIOR DO QUE ZERO ... ELE RETORNA O  ID
                     if (id > 0)
                     {

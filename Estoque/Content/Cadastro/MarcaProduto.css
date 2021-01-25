@@ -22,8 +22,3 @@
 #cabecalho_grid {
     margin-bottom: 20px;
 }
-
-/*Cursor passar a mãozinha onde for ordenado*/
-#grid_cadastro thead tr th span {
-    cursor: pointer;
-}

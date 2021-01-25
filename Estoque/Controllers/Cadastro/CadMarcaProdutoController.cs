@@ -28,9 +28,9 @@ namespace Estoque.Controllers.Cadastro
 
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public JsonResult MarcaProdutoPagina(int pagina, int tamPag)
+            public JsonResult MarcaProdutoPagina(int pagina, int tamPag/*, string filtro, string ordem*/)
             {
-                var lista = MarcaProdutoModel.RecuperarLista(pagina, tamPag);
+                var lista = MarcaProdutoModel.RecuperarLista(pagina, tamPag /*filtro, ordem*/);
 
                 return Json(lista);
             }
@@ -69,6 +69,7 @@ namespace Estoque.Controllers.Cadastro
             {
                 try
                 {
+                    
                     var id = model.Salvar();
                     //SE O ID FOR MAIOR DO QUE ZERO ... ELE RETORNA O  ID
                     if (id > 0)

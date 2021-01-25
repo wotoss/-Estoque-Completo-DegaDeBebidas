@@ -4,8 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
+
 
 namespace Estoque.Models
 {
@@ -19,11 +18,15 @@ namespace Estoque.Models
 
         public bool Ativo { get; set; }
 
+        [Required(ErrorMessage = "Selecione o país")]
         public int IdPais { get; set; }
 
         public int IdEstado { get; set; }
 
         public virtual EstadoModel Estado { get; set; }
+
+
+
 
         public static int RecuperarQuantidade()
         {

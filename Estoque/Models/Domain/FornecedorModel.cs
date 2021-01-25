@@ -50,11 +50,20 @@ namespace Estoque.Models
         [Required(ErrorMessage = "Selecione o país")]
         public int IdPais { get; set; }
 
+        //fazendo associação
+        public virtual PaisModel Pais { get; set; }
+
         [Required(ErrorMessage = "Selecione o estado")]
         public int IdEstado { get; set; }
 
+        //fazendo associação
+        public virtual EstadoModel Estado { get; set; }
+
         [Required(ErrorMessage ="Selecione a cidade")]
         public int IdCidade { get; set; }
+
+        //fazendo associação
+        public  virtual CidadeModel Cidade { get; set; }
 
         public bool Ativo { get; set; }
 
@@ -154,7 +163,7 @@ namespace Estoque.Models
                 using (var comando = new SqlCommand())
                 {
                     comando.Connection = conexao;
-                    comando.CommandText = "select * from estado where (id = @id)";
+                    comando.CommandText = "select * from fornecedor where (id = @id)";
 
                     comando.Parameters.Add("@id", SqlDbType.Int).Value = id;
 

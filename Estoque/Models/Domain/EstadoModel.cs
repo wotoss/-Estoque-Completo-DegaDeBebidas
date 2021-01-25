@@ -26,6 +26,9 @@ namespace Estoque.Models
         [Required(ErrorMessage = "Selecione o país")]
         public int IdPais { get; set; }
 
+        //fazendo associação
+        public virtual PaisModel Pais { get; set; }
+
 
 
         public static int RecuperarQuantidade()

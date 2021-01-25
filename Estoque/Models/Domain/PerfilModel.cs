@@ -20,7 +20,7 @@ namespace Estoque
         public bool Ativo { get; set; }
 
         //estmos fazendo a associação de UsuarioModel, com PerfilModel => Lembrando que temos uma FK no sql
-        public List<UsuarioModel> Usuarios { get; set; }
+        public virtual List<UsuarioModel> Usuarios { get; set; }
 
         //vamos inicializar no construtor está lista 
         public PerfilModel()
@@ -207,6 +207,7 @@ namespace Estoque
                             //select convert(int, scoped_identity()) =>  esta função que estou usando na query me retorna o ultimo valor que foi inserido no banco
                             //LEMBRANDO QUE O SCALAR ME RETONA UM OBJETO.LOGO EU CONVERTO PARA INTEIRO.
                             ret = (int)comando.ExecuteScalar();
+                            this.Id = ret;
                         }
 
                         //SE RECUPEROU O ID DO BANCO DE DADOS EU VOU EDITAR || ALTERAR

@@ -29,6 +29,10 @@ namespace Estoque.Models
         [Required(ErrorMessage = "Digite o e-mail")]
         public string Email { get; set; }
 
+        //aqui eu tenho uma lista de perfis 
+        public virtual List<PerfilModel> Perfis { get; set; }
+
+
 
         public static UsuarioModel ValidarUsuario(string login, string senha)
         {
