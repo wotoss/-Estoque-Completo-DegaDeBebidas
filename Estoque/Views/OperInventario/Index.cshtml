@@ -1,14 +1,10 @@
 ﻿@using Estoque.Models
 @model List<ProdutoInventarioViewModel>
-
 @{
     ViewBag.Title = "Inventário de Estoque";
 }
 
 <style>
-    /*
-     * Neste momento eu estou buscado cada 1 th (coluna)e vou passando a codificação de designer através do id=grid
-     */
     #grid th:nth-child(1) {
         width: 50px;
     }
@@ -42,7 +38,6 @@
     }
 </style>
 
-
 <div class="row">
     <div class="col-md-12" style="margin: 15px">
         <h3 class="text-center">@ViewBag.Title</h3>
@@ -57,7 +52,6 @@
                     </a>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-12">
                     <table id="grid" class="table table-bordered table-striped table-hover">
@@ -75,20 +69,20 @@
                         </thead>
                         <tbody>
                             @{var sequencia = 1;}
-                                @foreach (var produto in Model)
-                                {
-                            <tr data-id="@produto.Id">
-                                <td>@sequencia</td>
-                                <td>@produto.NomeLocalArmazenamento</td>
-                                <td>@produto.Codigo</td>
-                                <td>@produto.NomeProduto</td>
-                                <td>@produto.QuantEstoque</td>
-                                <td>@produto.NomeUnidadeMedida</td>
-                                <td><input type="number" class="form-control" value=""></td>
-                                <td><input type="text" class="form-control" value=""></td>
-                            </tr>
-                            sequencia++;
-                                }
+                            @foreach (var produto in Model)
+                            {
+                                <tr data-id="@produto.Id">
+                                    <td>@sequencia</td>
+                                    <td>@produto.NomeLocalArmazenamento</td>
+                                    <td>@produto.Codigo</td>
+                                    <td>@produto.NomeProduto</td>
+                                    <td>@produto.QuantEstoque</td>
+                                    <td>@produto.NomeUnidadeMedida</td>
+                                    <td><input type="number" class="form-control" value=""></td>
+                                    <td><input type="text" class="form-control" value=""></td>
+                                </tr>
+                                sequencia++;
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -104,8 +98,6 @@
     </div>
 </div>
 
-<!--Fazendo a seção JavaScript-->
-
 @section scripts{
     <script src="~/Scripts/comum.js"></script>
     <script src="~/Scripts/sweetalert2.min.js"></script>
@@ -119,9 +111,7 @@
             var ret = false;
             $('#grid tbody tr input[type=number]').each(function (index, input) {
                 if ($(input).val() != '') {
-                    //e o ret true é para ser retornado pela função
                     ret = true;
-                    //este return false é para parar o (each)
                     return false;
                 }
             });
@@ -131,22 +121,11 @@
             var ret = [];
             $('#grid tbody tr').each(function (index, item) {
                 var tr = $(item),
-                    //tr.find('td')=> Estou buscando lendo()find todas as colunas (td). (qual das colunas (eq(4) seria a coluna 4)) eo que eu cou pegar o texto (text)
-                    //desta forma eu obtenho a informação da quantidade de estoque
                     quant_estoque = parseInt(tr.find('td').eq(4).text()),
-                    //veja que estou usando o atributo (data-id), desta forma eu tambem consigo pegar o valor que no casa seria? O (produto.Id)
                     id_produto = tr.attr('data-id'),
-                    //Vou no (tr) agora eu vou pegar o input do tipo texto e dou uma val(). para pegar o valor dele.
-                    //após ter pegado o valor dele. EU DOU UM PARSEINT para converter o valor...
                     quant_inventario = parseInt(tr.find('input[type=number]').val()),
-                    //aqui neste caso faço a mesma coisa.
-                    //vou no tr dou m find pego o input do tipo texo e dou um val(), para pegar o valor dele.
                     motivo = tr.find('input[type=text]').val();
-
-                //quantidade inventário se ela foi preenchida ou seja, se ela é maior do que zero
                 if (quant_inventario > 0) {
-                    //este ret será um vetor ou um array. Por isto posso utilizar o (push)
-                    //PRONTO ! É ISTO QUE VAMOS ENVIAR...
                     ret.push({
                         IdProduto: id_produto,
                         QuantidadeEstoque: quant_estoque,
@@ -188,21 +167,13 @@
             else {
                 var url = '@Url.Action("Salvar", "OperInventario")',
                     dados = { dados: obter_dados_inventario() };
-                //Poderiamos enviar os dados como post. Mas vamos enviar os dados como Ajax.
-                //Porque como ajax? Porque vamos enviar os dados como Json e não como form
                 $.ajax({
-                    //o verbo ou o método é o POST
                     type: 'POST',
-                    // processData: false, Porque?  não quero que processe NADA minha função Ajax  vai enviar os dados (obter_dados_inventario) e pronto
                     processData: false,
-                    //Estou conversando com o meu (Server ou Servidor) vou enviar a aplicação via Json
                     contentType: 'application/json',
-                    //Este (stringify) tem que ser colocado quando estamos trabalhando com JSON => E passo o meus dados
                     data: JSON.stringify(add_anti_forgery_token(dados)),
-                    // a url = já foi montada acima
                     url: url,
                     dataType: 'json',
-                    //Este (response é a resposta) do servidor
                     success: function (response) {
                         if (response.OK) {
                             swal('Sucesso', 'Inventário salvo com sucesso.', 'info');
@@ -220,4 +191,3 @@
         });
     </script>
 }
-

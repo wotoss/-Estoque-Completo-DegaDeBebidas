@@ -1,11 +1,11 @@
 ﻿
 using Estoque.Controllers.Operacao;
 using Estoque.Models;
-using Estoque.Models.Binders;
 using System.Web.Mvc;
 
 namespace Estoque.Controllers
 {
+    [Authorize(Roles = "Gerente,Administrativo,Operador")]
     public class OperEntradaProdutoController : OperEntradaSaidaProdutoController
     {
         protected override string SalvarPedido(EntradaSaidaProdutoViewModel dados)

@@ -1,8 +1,8 @@
-﻿using Estoque.Models;
+﻿using AutoMapper;
+using Estoque.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Estoque.Controllers.Cadastro
@@ -20,20 +20,21 @@ namespace Estoque.Controllers.Cadastro
             ViewBag.PaginaAtual = 1;
 
             var lista = CidadeModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina);
+            //como retornar um (int) não precisa retornar...
             var quant = CidadeModel.RecuperarQuantidade();
 
             var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
             ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
-            ViewBag.Paises = PaisModel.RecuperarLista();
+            ViewBag.Paises = Mapper.Map<List<PaisViewModel>>(PaisModel.RecuperarLista());
 
             return View(lista);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult CidadePagina(int pagina, int tamPag/*, string filtro*//*, string ordem*/)
+        public JsonResult CidadePagina(int pagina, int tamPag, string ordem)
         {
-            var lista = CidadeModel.RecuperarLista(pagina, tamPag/*, filtro*//*, ordem*/);
+            var lista = CidadeModel.RecuperarLista(pagina, tamPag, ordem);
 
             return Json(lista);
         }
@@ -42,9 +43,8 @@ namespace Estoque.Controllers.Cadastro
         [ValidateAntiForgeryToken]
         public JsonResult RecuperarCidade(int id)
         {
-            return  Json(CidadeModel.RecuperarPeloId(id));
-
-            
+            var vm = CidadeModel.RecuperarPeloId(id);
+            return Json(vm);          
         }
 
         [HttpPost]
@@ -52,7 +52,7 @@ namespace Estoque.Controllers.Cadastro
         public JsonResult RecuperarCidadesDoEstado(int idEstado)
         {
             var lista = CidadeModel.RecuperarLista(idEstado: idEstado);
-            //lista.Insert(0, new CidadeModel { Id = -1, Nome = "-- Não Selecionado --" });
+            
             return Json(lista);
         }
 
@@ -66,7 +66,7 @@ namespace Estoque.Controllers.Cadastro
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult SalvarCidade(CidadeModel model)
+        public JsonResult SalvarCidade(CidadeViewModel model)
         {
             var resultado = "OK";
             var mensagens = new List<string>();
@@ -81,9 +81,8 @@ namespace Estoque.Controllers.Cadastro
             {
                 try
                 {
-                    //var vm = Mapper.Map<CidadeModel>(model);
-                    
-                    var id = model.Salvar();
+                    var vm = Mapper.Map<CidadeModel>(model);
+                    var id = vm.Salvar();
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
@@ -98,7 +97,7 @@ namespace Estoque.Controllers.Cadastro
                     resultado = "ERRO";
                 }
             }
-
+        
             return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
         }
     }

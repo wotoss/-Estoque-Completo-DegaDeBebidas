@@ -1,5 +1,5 @@
 ﻿
-@model List<Estoque.Models.ProdutoModel>
+@model List<Estoque.Models.ViewModel.ProdutoViewModel>
 @{
     Layout = "~/Views/Shared/_Cadastro.cshtml";
     ViewBag.Title = "Produtos";
@@ -17,10 +17,10 @@
 }
 
 @section TituloGrid {
-    <th>@*<span class="coluna-ordenacao" data-campo="codigo">*@Código@*</span>*@</th>
-    <th>@*<span class="coluna-ordenacao" data-campo="nome">*@Nome@*</span>*@</th>
-    <th>@*<span class="coluna-ordenacao" data-campo="quant_estoque">*@Quantidade@*</span>*@</th>
-    <th>@*<span class="coluna-ordenacao" data-campo="ativo">*@Ativo@*</span>*@</th>
+    <th><span class="coluna-ordenacao" data-campo="codigo">Código</span></th>
+    <th><span class="coluna-ordenacao" data-campo="nome">Nome</span></th>
+    <th><span class="coluna-ordenacao" data-campo="quant_estoque">Quantidade</span></th>
+    <th><span class="coluna-ordenacao" data-campo="ativo">Ativo</span></th>
     <th>Ação</th>
 }
 
@@ -49,7 +49,6 @@
             @Html.TextBox("txt_quant_estoque", null, new { @class = "form-control" })
         </div>
     </div>
-    <!--Inicia os nosso DropDown Selecione-->
     <div class="row">
         <div class="col-md-4">
             @Html.Label("ddl_unidade_medida", "Unidade de Medida", new { @class = "control-label" })
@@ -85,7 +84,6 @@
     <div class="row">
         <div class="col-md-12">
             @Html.Label("txt_imagem", "Imagem", new { @class = "control-label" })
-            <!--neste accept estamos colocando o formato que aceitavel no arquivo, seria (jpg, jpeg) -->
             @Html.TextBox("txt_imagem", null, new { @class = "form-control", type = "file", accept = "image/jpg,image/jpeg" })
         </div>
     </div>
@@ -122,7 +120,6 @@
         }
     </script>
     <script id="template-grid" type="x-tmpl-mustache">
-        
         <tr data-id="{{ Id }}" data-imagem="{{ Imagem }}">
             <td>{{ Codigo }}</td>
             <td>{{ Nome }}</td>
@@ -139,7 +136,6 @@
         <fieldset>
             <div class="row">
                 <div class="col-md-12">
-                    <!--neste caso no caminho retiramos (~) src="~/Content/Imagens/ (Pois este (~) só é utilizado no raizor)-->
                     <img src="/Content/Imagens/{{ Imagem }}" />
                 </div>
             </div>

@@ -7,11 +7,12 @@ function set_dados_form(dados) {
     $('#txt_email').val(dados.Email);
     $('#txt_login').val(dados.Login);
     $('#txt_senha').val(dados.Senha);
-    
 }
 
-//faz durante a inclusão
-//Quando estamos incluindo a tela de cadastro
+function set_focus_form() {
+    $('#txt_nome').focus();
+}
+
 function get_dados_inclusao() {
     return {
         Id: 0,
@@ -19,13 +20,9 @@ function get_dados_inclusao() {
         Email: '',
         Login: '',
         Senha: ''
-
     };
 }
 
-//veja que a function tem tudo que eu preciso Id,Nome, Ativo
-//para recuperar os valores 
-//Quando estou alterando a tela de cadastro
 function get_dados_form() {
     return {
         Id: $('#id_cadastro').val(),
@@ -33,30 +30,12 @@ function get_dados_form() {
         Email: $('#txt_email').val(),
         Login: $('#txt_login').val(),
         Senha: $('#txt_senha').val()
-
     };
 }
-
-//faz o focu no campo nome
-function set_focus_form() {
-    $('#txt_nome').focus();
-}
-
-//function set_dados_grid(dados) {
-//    return  '<td>' + dados.Nome + '</td>' +
-//            '<td>' + dados.Login + '</td>';
-
-//}
-
-
-
-
 
 function preencher_linha_grid(param, linha) {
     linha
         .eq(0).html(param.Nome).end()
         .eq(1).html(param.Login);
 }
-
-
 

@@ -18,22 +18,18 @@
         <section>
             @using (Html.BeginForm("AlterarSenhaUsuario", "Conta", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
-                <!--Este Summary mostra as informações-->
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <div class="form-group">
-                   <!--Nos temos a senha atual com a a mensagem de validação ValidationMessageFor-->
-                   @Html.LabelFor(m => m.SenhaAtual, new { @class = "control-label" })
-                   @Html.PasswordFor(m => m.SenhaAtual, new { @class = "form-control" })
-                   @Html.ValidationMessageFor(m => m.SenhaAtual, "", new { @class = "text-danger" })
+                    @Html.LabelFor(m => m.SenhaAtual, new { @class = "control-label" })
+                    @Html.PasswordFor(m => m.SenhaAtual, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.SenhaAtual, "", new { @class = "text-danger" })
                 </div>
                 <div class="form-group">
-                    <!--Aqui nós temos a nova senha com a msg de validação-->
                     @Html.LabelFor(m => m.NovaSenha, new { @class = "control-label" })
                     @Html.PasswordFor(m => m.NovaSenha, new { @class = "form-control" })
                     @Html.ValidationMessageFor(m => m.NovaSenha, "", new { @class = "text-danger" })
                 </div>
                 <div class="form-group">
-                    <!--E aqui a confirmação da senha-->
                     @Html.LabelFor(m => m.ConfirmacaoNovaSenha, new { @class = "control-label" })
                     @Html.PasswordFor(m => m.ConfirmacaoNovaSenha, new { @class = "form-control" })
                     @Html.ValidationMessageFor(m => m.ConfirmacaoNovaSenha, "", new { @class = "text-danger" })
@@ -63,7 +59,6 @@
     </div>
 </div>
 
-<!--Aqui temos o Jquery Validation-->
 @section Scripts{
     @Scripts.Render("~/bundles/jqueryval")
 }
