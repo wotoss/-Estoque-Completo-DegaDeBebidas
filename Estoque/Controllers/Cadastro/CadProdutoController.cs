@@ -1,5 +1,4 @@
 ﻿
-using AutoMapper;
 using Estoque.Models;
 using Estoque.Models.ViewModel;
 using System;
@@ -9,14 +8,14 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ValidationContext = System.ComponentModel.DataAnnotations.ValidationContext;
 
 namespace Estoque.Controllers.Cadastro
 {
     [Authorize(Roles = "Gerente,Administrativo,Operador")]
-    public class CadProdutoController : Controller//BaseController
+    public class CadProdutoController : BaseController
     {
-        private const int _quantMaxLinhasPorPagina = 5;
-
+      
         public ActionResult Index()
         {
             ViewBag.ListaTamPag = new SelectList(new int[] { _quantMaxLinhasPorPagina, 10, 15, 20 }, _quantMaxLinhasPorPagina);
@@ -42,8 +41,10 @@ namespace Estoque.Controllers.Cadastro
         public JsonResult ProdutoPagina(int pagina, int tamPag, string filtro, string ordem)
         {
             var lista = Mapper.Map<List<ProdutoViewModel>>(ProdutoModel.RecuperarLista(pagina, tamPag, filtro, ordem));
+            var quantRegistro = ProdutoModel.RecuperarQuantidade();
+            var quantidade = QuantidadePaginas(quantRegistro);
+            return Json(new { Lista = lista, Quantidade = quantidade });
 
-            return Json(lista);
         }
 
         [HttpPost]
@@ -77,7 +78,9 @@ namespace Estoque.Controllers.Cadastro
         [ValidateAntiForgeryToken]
         public JsonResult ExcluirProduto(int id)
         {
-            return Json(ProdutoModel.ExcluirPeloId(id));
+            var ok = ProdutoModel.ExcluirPeloId(id);
+            var quant = ProdutoModel.RecuperarQuantidade();
+            return Json(new { Ok = ok, Quantidade = quant });
         }
 
         [HttpPost]
@@ -101,7 +104,7 @@ namespace Estoque.Controllers.Cadastro
                 Id = Int32.Parse(Request.Form["Id"]),
                 Codigo = Request.Form["Codigo"],
                 Nome = Request.Form["Nome"],
-                PrecoCusto = Request.Form["PrecoCusto"].AsDecimal(),
+                PrecoCusto = Request.Form["PrecoCusto"].ToDecimal(),
                 PrecoVenda = Request.Form["PrecoVenda"].ToDecimal(),
                 QuantEstoque = Request.Form["QuantEstoque"].ToInt32(),
                 IdUnidadeMedida = Request.Form["IdUnidadeMedida"].ToInt32(),

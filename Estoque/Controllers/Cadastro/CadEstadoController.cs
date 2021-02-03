@@ -1,5 +1,5 @@
 ﻿
-using AutoMapper;
+using Estoque.Controllers;
 using Estoque.Models;
 using System;
 using System.Collections.Generic;
@@ -9,10 +9,9 @@ using System.Web.Mvc;
 namespace ControleEstoque.Web.Controllers
 {
     [Authorize(Roles = "Gerente,Administrativo,Operador")]
-    public class CadEstadoController : Controller //BaseController
+    public class CadEstadoController : BaseController
     {
-        private const int _quantMaxLinhasPorPagina = 5;
-
+        
         public ActionResult Index()
         {
             ViewBag.ListaTamPag = new SelectList(new int[] { _quantMaxLinhasPorPagina, 10, 15, 20 }, _quantMaxLinhasPorPagina);
@@ -43,6 +42,7 @@ namespace ControleEstoque.Web.Controllers
         public JsonResult RecuperarEstadosDoPais(int idPais)
         {
             var lista = Mapper.Map<List<EstadoViewModel>>(EstadoModel.RecuperarLista(idPais: idPais));
+            //desta forma eu estou incluindo um item na posição [0] zero do meu select
             lista.Insert(0, new EstadoViewModel { Id = -1, Nome = "-- Não Selecionado --" });
             return Json(lista);
         }

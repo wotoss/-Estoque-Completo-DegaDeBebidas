@@ -1,16 +1,15 @@
-﻿using System;
+﻿
+using Estoque.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Estoque.Models;
 
 namespace Estoque.Controllers.Cadastro
 {
     [Authorize(Roles = "Gerente,Administrativo,Operador")]
-    public class CadLocalArmazenamentoController : Controller
+    public class CadLocalArmazenamentoController : BaseController
     {
-        private const int _quantMaxLinhasPorPagina = 5;
 
         public ActionResult Index()
         {
@@ -18,7 +17,7 @@ namespace Estoque.Controllers.Cadastro
             ViewBag.QuantMaxLinhasPorPagina = _quantMaxLinhasPorPagina;
             ViewBag.PaginaAtual = 1;
 
-            var lista = LocalArmazenamentoModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina);
+            var lista = Mapper.Map<List<LocalArmazenamentoViewModel>>(LocalArmazenamentoModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina));
             var quant = LocalArmazenamentoModel.RecuperarQuantidade();
 
             var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
@@ -29,20 +28,20 @@ namespace Estoque.Controllers.Cadastro
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult LocalArmazenamentoPagina(int pagina, int tamPag)
+        public JsonResult LocalArmazenamentoPagina(int pagina, int tamPag, string filtro, string ordem)
         {
-            var lista = LocalArmazenamentoModel.RecuperarLista(pagina, tamPag);
+            var lista = Mapper.Map<List<LocalArmazenamentoViewModel>>(LocalArmazenamentoModel.RecuperarLista(pagina, tamPag, filtro, ordem));
 
             return Json(lista);
         }
 
-
-        //Neste estou recuperando o produto pelo Id
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult RecuperarLocalArmazenamento(int id)
         {
-            return Json(LocalArmazenamentoModel.RecuperarPeloId(id));
+            var vm = Mapper.Map<LocalArmazenamentoViewModel>(LocalArmazenamentoModel.RecuperarPeloId(id));
+
+            return Json(vm);
         }
 
         [HttpPost]
@@ -55,7 +54,7 @@ namespace Estoque.Controllers.Cadastro
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult SalvarLocalArmazenamento(LocalArmazenamentoModel model)
+        public JsonResult SalvarLocalArmazenamento(LocalArmazenamentoViewModel model)
         {
             var resultado = "OK";
             var mensagens = new List<string>();
@@ -70,13 +69,12 @@ namespace Estoque.Controllers.Cadastro
             {
                 try
                 {
-                    var id = model.Salvar();
-                    //SE O ID FOR MAIOR DO QUE ZERO ... ELE RETORNA O  ID
+                    var vm = Mapper.Map<LocalArmazenamentoModel>(model);
+                    var id = vm.Salvar();
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
                     }
-                    //CASO ACONTEÇA ALGUM ERRO
                     else
                     {
                         resultado = "ERRO";
@@ -86,9 +84,8 @@ namespace Estoque.Controllers.Cadastro
                 {
                     resultado = "ERRO";
                 }
-
             }
-            //vou criar um objeto anonimo para fazer o meu retorno
+
             return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
         }
     }

@@ -1,102 +1,79 @@
-﻿
-@{
+﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var lista = ViewBag.Lista;
     var titulo = ViewBag.Title;
 
     ViewBag.Title = "Cadastro de " + ViewBag.Title;
+
+    <!--Estou (ocultando) e fazendo (aparecer) o botão da paginação 1, 2, 3 ...-->
+    <!--Se quantidade de Paginas for maior do que 1 "tendo paginas" ? é para exibir "display: block" : Caso não tenha "Não exibi => display: none"-->
+    var exibirPaginas = (ViewBag.QuantPaginas > 1) ? "display: block" : "display: none";
 }
 
 @RenderSection("Styles", true)
 @RenderBody()
 
-
 <div id="cadastro">
     <section id="cadastro_cabecalho">
         <h1>@ViewBag.Title</h1>
     </section>
-
     <section id="cadastro_conteudo">
-
         <div id="cabecalho_grid" class="row">
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-2">
-                        <a id="btn_incluir" class="btn btn-success" role="button"><i class="glyphicon glyphicon-plus"></i> Cadastrar</a>
+                        <a id="btn_incluir" class="btn btn-success" role="button"><i class="glyphicon glyphicon-plus"></i> Incluir</a>
                     </div>
-
-                    <div class="col-md-4">
+                    <div class="col-md-2">
+                        Registros:<span id="quantidade_registros">@ViewBag.QuantidadeRegistros</span>
+                    </div>
+                    <div class="col-md-2" id="ddl_tam_pag_container">
                         @Html.DropDownList("ddl_tam_pag", (SelectList)ViewBag.ListaTamPag, new { @class = "selectpicker" })
-
                     </div>
-
                     <div class="col-md-6">
                         @Html.TextBox("txt_filtro", null, new { @class = "form-control" })
                     </div>
-                </div><!--class row-->
-                <!--vai conter a minha lista de itens, quantidade de páginas-->
+                </div>
             </div>
         </div>
-        <!--vou fazer a tabela-->
         <div class="row">
             <div class="col-md-12">
-                <!--Pensando nesta msg escrita se for nulo ou igual 0 não vamos exibir "vou tornar invisivel" -->
                 <table id="grid_cadastro" class="table table-bordered table-striped table-hover @Html.Raw(lista == null || lista.Count == 0 ? "invisivel" : "")">
                     <thead>
-                        <!--cabeçalho-->
                         <tr>
                             @RenderSection("TituloGrid", true)
                         </tr>
                     </thead>
                     <tbody>
-                        <!--Estou pegando este <tbody> lá no meu Pais,js através do id grid_cadastro e preenchendo aqui o corpo-->
-                        @*@RenderSection("LinhaGrid", true)*@ <!--Estou removendo esta seção pois estou usando mestache agora-->
                     </tbody>
                 </table>
-                <!--montando a msg para o usuario-->
                 <div id="mensagem_grid" @Html.Raw(lista != null && lista.Count > 0 ? "class=\"invisivel\"" : "")>
-                    Nenhum registro encontrado em @titulo
+                    Nenhum registro em @titulo
                 </div>
             </div>
         </div>
-        <!--SÓ VAI IMPRIMIR NA TELA TODO O SELECTOR DE PAGINA, SE FOR MAIOR QUE 1-->
-        @if (ViewBag.QuantPaginas > 1)
-        {
-            <!--Inicio -Quantidade de Paginas paginação-->
-            <div class="row">
-                <!--linha-->
+            <div id="paginas" class="row" style="@exibirPaginas">
                 <div class="col-md-12">
-                    <!--coluna-->
                     <nav>
                         <ul class="pagination">
-                            <!--<li class="page-item"><a class="page-link" href="#">Previous</a></li>-->
                             <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <!--Vou fazer um for iniciar da 2º pagina por a 1º já é fixa-->
                             @for (int i = 2; i <= ViewBag.QuantPaginas; i++)
                             {
-                                <!--Já dentro do for eu vou imprimir a pagina na tela  dinamicamente -->
                                 <li class="page-item"><a class="page-link" href="#">@i</a></li>
                             }
-
                         </ul>
                     </nav>
                 </div>
             </div>
-            <!--Fim - paginação-->
-        }<!---->
     </section>
 </div>
-<!--Modal a apresentar-->
-@Html.Hidden("id_cadastro");<!--form-horizontal-->
+@Html.Hidden("id_cadastro")
 <div id="modal_cadastro" class="invisivel" role="dialog">
-    <!--para mosrat a mensagem da linha  106-->
     <div id="msg_mensagem_aviso" class="text-danger invisivel"></div>
     <fieldset>
-        @Html.AntiForgeryToken() <!--ele vai gerar o token de validação e a controller vai poder validar-->
+        @Html.AntiForgeryToken()
         @RenderSection("CamposCadastro", true)
-
-        <!--buttom-->
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
@@ -104,21 +81,27 @@
                         <a id="btn_sair" class="btn btn-default" role="button" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> Sair</a>
                         <a id="btn_confirmar" class="btn btn-primary" role="button"><i class="glyphicon glyphicon-ok"></i> Salvar</a>
                     </div>
-                    <!--Aviso para o usuario-->
-                    <div id="msg_aviso" class="alert alert-warning invisivel">Necessário preencher os campos acima</div>
-                    <div id="msg_erro" class="alert alert-danger invisivel">Ops ! Estamos com erro!</div>
+                    <div id="msg_aviso" class="alert alert-warning invisivel">Falta preencher os campos acima.</div>
+                    <div id="msg_erro" class="alert alert-danger invisible">Ops! Deus ruim!</div>
                 </div>
             </div>
         </div>
     </fieldset>
 </div>
-
 @section Scripts{
-    <!--Posicionamento é importante colocando o mustache antes, poderemos usa-lo até no CadastroBase -->
     <script src="~/Scripts/mustache.min.js"></script>
     <script src="~/Scripts/Cadastro/CadBase.js"></script>
     @RenderSection("Scripts", true)
 }
+
+
+
+
+
+
+
+
+
 
 
 

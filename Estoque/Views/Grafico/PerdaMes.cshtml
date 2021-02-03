@@ -1,7 +1,51 @@
 ﻿
+<h2>Perda de Produtos no Mês</h2>
+
 @{
-    ViewBag.Title = "PerdaMes";
+    var mes = ViewBag.Mes;
+    var ano = ViewBag.Ano;
+    var dias = ViewBag.Dias;
+    var perdas = (ViewBag.Perdas as List<int>);
+
+    var diasSerializado = Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(dias));
+    var perdasSerializado = Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(perdas));
 }
 
-<h2>PerdaMes</h2>
+<canvas id="grafico" width="400" height="150">
+</canvas>
 
+@section Scripts{
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script> <!--foi colocado via (cdn) e não (baixado dentro do pacote) -->
+    <script> 
+        var dias = @diasSerializado,
+            perdas = @perdasSerializado;
+        $(document)
+            .ready(function () {
+                var ctx = $('#grafico'); //este é o id da tag (<canvas> acima
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: dias, //labels => significa os nomes que estão nas (colunas do gráfico)
+                        datasets: [{
+                            data: perdas, //Estas são as (linhas do gráfico).
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)', //temos a definição da cor do fundo.
+                            borderColor: 'rgba(54, 162, 235, 1)', //aqui nos temos a definição da cor da bordar.
+                            borderWidth: 1 //definição da expessura da borda posso aumentar ou diminuir.
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true //o grafico está iniciando em (zero) o que é o mais correto => Se colocarmos (false) ele muda, mas é melhor (true)
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+    </script>
+}

@@ -6,14 +6,18 @@ using System.Web.Mvc;
 namespace Estoque.Controllers.Relatorio
 {
     [Authorize(Roles = "Gerente,Administrativo,Operador")]
-    public class RelatRessuprimentoController : Controller //BaseController
+    public class RelatRessuprimentoController : BaseController
     {
+        //este é o filtro vai exibir, apenas a visão, tela a página
         [HttpGet]
         public ActionResult Filtro()
         {
             return View("~/Views/Relatorio/FiltroRelatRessuprimentoView.cshtml");
         }
 
+
+
+        //Este ira exibir o relátorio
         [HttpPost]
         public ActionResult ValidarFiltro(int? minimo)
         {

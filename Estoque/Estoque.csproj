@@ -137,8 +137,8 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="AutoMapper\AutoMapperConfig.cs" />
     <Compile Include="AutoMapper\AutoMapperProfile.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\Cadastro\CadCidadeController.cs" />
     <Compile Include="Controllers\Cadastro\CadEstadoController.cs" />
     <Compile Include="Controllers\Cadastro\CadFornecedorController.cs" />
@@ -150,7 +150,6 @@
     <Compile Include="Controllers\Cadastro\CadProdutoController.cs" />
     <Compile Include="Controllers\Cadastro\CadUnidadeMedidaController.cs" />
     <Compile Include="Controllers\Cadastro\CadUsuarioController.cs" />
-    <Compile Include="Controllers\Cadastro\OperInventarioController.cs" />
     <Compile Include="Controllers\ContaController.cs" />
     <Compile Include="Controllers\GraficoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -226,6 +225,7 @@
     <Compile Include="Models\ViewModel\UnidadeMedidaViewModel.cs" />
     <Compile Include="Models\ViewModel\UsuarioViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-select.css" />
@@ -238,12 +238,15 @@
     <Content Include="Content\Cadastro\Estado.css" />
     <Content Include="Content\Cadastro\Fornecedor.css" />
     <Content Include="Content\Cadastro\GrupoProduto.css" />
+    <Content Include="Content\Cadastro\LocalArmazenamento.css" />
+    <Content Include="Content\Cadastro\Logo_Arredondado.css" />
     <Content Include="Content\Cadastro\MarcaProduto.css" />
     <Content Include="Content\Cadastro\Pais.css" />
     <Content Include="Content\Cadastro\Perfil.css" />
     <Content Include="Content\Cadastro\Produto.css" />
     <Content Include="Content\Cadastro\UnidadeMedida.css" />
     <Content Include="Content\Cadastro\Usuario.css" />
+    <Content Include="Content\Imagens\Adega.jpeg" />
     <Content Include="Content\Imagens\logo.png" />
     <Content Include="Content\sweetalert2.min.css" />
     <Content Include="favicon.ico" />
@@ -260,7 +263,7 @@
     <Content Include="Scripts\Cadastro\CadBase.js" />
     <Content Include="Scripts\Cadastro\Cidade.js" />
     <Content Include="Scripts\Cadastro\Estado.js" />
-    <Content Include="Scripts\Cadastro\Fornecedor.js" />
+    <Content Include="Scripts\Cadastro\Fornecedo.js" />
     <Content Include="Scripts\Cadastro\GrupoProduto.js" />
     <Content Include="Scripts\Cadastro\LocalArmazenamento.js" />
     <Content Include="Scripts\Cadastro\MarcaProduto.js" />

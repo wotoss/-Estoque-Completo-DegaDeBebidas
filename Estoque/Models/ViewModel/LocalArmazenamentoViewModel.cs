@@ -1,7 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 
-namespace Estoque.Models.ViewModel
+namespace Estoque.Models
 {
     public class LocalArmazenamentoViewModel
     {

@@ -4,27 +4,29 @@ using AutoMapper;
 using Estoque.Models;
 using Estoque.Models.ViewModel;
 
-namespace Estoque.AutoMapper
+namespace Estoque
 {
-    //Auto Mapper faz todos os mapeamentos entre classes 
-    //Por exemplo pode transformar um CidadeModel em CidadeViewModel
-    public class AutoMapperProfile : Profile
+    public static class AutoMapperProfile
     {
-        public AutoMapperProfile()
+        public static IMapper CreateConfig()
         {
-            CreateMap<CidadeViewModel, CidadeModel>().ReverseMap();
-            CreateMap<EstadoViewModel, EstadoModel>().ReverseMap();
-            CreateMap<FornecedorViewModel, FornecedorModel>().ReverseMap();
-            CreateMap<GrupoProdutoViewModel, GrupoProdutoModel>().ReverseMap();
-            CreateMap<LocalArmazenamentoViewModel, LocalArmazenamentoModel>().ReverseMap();
-            CreateMap<MarcaProdutoViewModel, MarcaProdutoModel>().ReverseMap();
-            CreateMap<PaisModel, PaisViewModel>().ReverseMap();
-            CreateMap<PerfilViewModel, PerfilModel>().ReverseMap();
-            CreateMap<MarcaProdutoViewModel, MarcaProdutoModel>().ReverseMap();//vamos
-            CreateMap<ProdutoViewModel, ProdutoModel>().ReverseMap();
-            CreateMap<UnidadeMedidaViewModel, UnidadeMedidaModel>().ReverseMap();
-            CreateMap<UsuarioModel, UsuarioViewModel>().ReverseMap();
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<CidadeViewModel, CidadeModel>().ReverseMap();
+                cfg.CreateMap<EstadoViewModel, EstadoModel>().ReverseMap();
+                cfg.CreateMap<FornecedorViewModel, FornecedorModel>().ReverseMap();
+                cfg.CreateMap<GrupoProdutoViewModel, GrupoProdutoModel>().ReverseMap();
+                cfg.CreateMap<LocalArmazenamentoViewModel, LocalArmazenamentoModel>().ReverseMap();
+                cfg.CreateMap<MarcaProdutoViewModel, MarcaProdutoModel>().ReverseMap();
+                cfg.CreateMap<PaisViewModel, PaisModel>().ReverseMap();
+                cfg.CreateMap<PerfilViewModel, PerfilModel>().ReverseMap();
+                cfg.CreateMap<MarcaProdutoViewModel, MarcaProdutoModel>().ReverseMap();
+                cfg.CreateMap<ProdutoViewModel, ProdutoModel>().ReverseMap();
+                cfg.CreateMap<UnidadeMedidaViewModel, UnidadeMedidaModel>().ReverseMap();
+                cfg.CreateMap<UsuarioViewModel, UsuarioModel>().ReverseMap();
+            }).CreateMapper();
 
+            return config;
         }
     }
 }

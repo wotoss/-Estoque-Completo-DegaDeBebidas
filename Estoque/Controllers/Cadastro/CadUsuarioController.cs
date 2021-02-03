@@ -1,17 +1,18 @@
 ﻿
-using AutoMapper;
+
+using Estoque.Controllers;
 using Estoque.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
-namespace ControleEstoque.Web.Controllers
+namespace Estoque.Controllers
 {
     [Authorize(Roles = "Gerente")]
-    public class CadUsuarioController : Controller /*BaseController*/
+    public class CadUsuarioController : BaseController
     {
-        private const int _quantMaxLinhasPorPagina = 5;
+       
         private const string _senhaPadrao = "{$127;$188}";
 
         public ActionResult Index()

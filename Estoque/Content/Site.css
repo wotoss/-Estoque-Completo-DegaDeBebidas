@@ -16,15 +16,7 @@
     white-space: normal;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-/*input,
-select,
-textarea {
-    max-width: 280px;
-}*/
-
-/*Para pagina de login*/
-.container-login{
+.container-login {
     width: 400px;
     margin: 0 auto;
 }
@@ -38,13 +30,16 @@ textarea {
     margin-bottom: 30px;
     text-transform: uppercase;
 }
-.invisivel{
+
+.invisivel {
     display: none;
 }
-.modal{
+
+.modal {
     overflow-y: hidden;
 }
-body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom{
+
+body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom {
     margin-right: 0px;
 }
 
@@ -53,4 +48,12 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
     text-align: center;
     border: 1px solid #dddddd;
     line-height: 100px;
+}
+
+#grid_cadastro thead tr th span {
+    cursor: pointer;
+}
+
+#ddl_tam_pag_container .bootstrap-select {
+    width: 100%;
 }

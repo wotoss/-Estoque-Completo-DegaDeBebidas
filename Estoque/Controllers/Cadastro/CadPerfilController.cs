@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿
 using Estoque.Models;
 using Estoque.Models.ViewModel;
 using System;
@@ -9,10 +9,9 @@ using System.Web.Mvc;
 namespace Estoque.Controllers.Cadastro
 {
     [Authorize(Roles = "Gerente")]
-    public class CadPerfilController : Controller //BaseController
+    public class CadPerfilController : BaseController
     {
-        private const int _quantMaxLinhasPorPagina = 5;
-
+      
         public ActionResult Index()
         {
             ViewBag.ListaUsuario = Mapper.Map<List<UsuarioViewModel>>(UsuarioModel.RecuperarLista());

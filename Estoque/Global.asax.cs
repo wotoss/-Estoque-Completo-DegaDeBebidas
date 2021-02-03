@@ -1,4 +1,4 @@
-using Estoque.AutoMapper;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,14 @@ namespace Estoque
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            AutoMapperConfig.RegisterMappings();
+            
+        }
+
+        //Nos estamos fazendo o mapeamento ao iniciar qualquer requisição
+        //Esta é a nossa inicialização do mapeamento
+        protected void Application_BeginRequest()
+        {
+            Context.Items["Mapper"] = AutoMapperProfile.CreateConfig();
         }
 
         void Application_Error(object sender, EventArgs e)

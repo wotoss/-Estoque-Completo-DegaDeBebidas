@@ -1,8 +1,8 @@
 ﻿
-
 using System.ComponentModel.DataAnnotations;
 
-namespace Estoque.Models.ViewModel
+
+namespace Estoque.Models
 {
     public class FornecedorViewModel
     {
@@ -44,14 +44,17 @@ namespace Estoque.Models.ViewModel
         public string Cep { get; set; }
 
         [Required(ErrorMessage = "Selecione o país.")]
+        //estou dizendo que o  select é acima 1. Pois a posição [0] eu declarei na controller
         [Range(1, int.MaxValue, ErrorMessage = "Selecione o país.")]
         public int IdPais { get; set; }
 
         [Required(ErrorMessage = "Selecione o estado.")]
+        //estou dizendo que o  select é acima 1. Pois a posição [0] eu declarei na controller
         [Range(1, int.MaxValue, ErrorMessage = "Selecione o estado.")]
         public int IdEstado { get; set; }
 
         [Required(ErrorMessage = "Selecione a cidade.")]
+        //estou dizendo que o  select é acima 1. Pois a posição [0] eu declarei na controller
         [Range(1, int.MaxValue, ErrorMessage = "Selecione a cidade.")]
         public int IdCidade { get; set; }
 

@@ -1,9 +1,10 @@
 ﻿
 
+
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 
-namespace Estoque.Models.Maps
+namespace Estoque.Models
 {
     public class FornecedorMap : EntityTypeConfiguration<FornecedorModel>
     {

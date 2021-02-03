@@ -93,7 +93,7 @@ function salvar_ok(response, param) {
             $('#grid_cadastro').removeClass('invisivel');
             $('#mensagem_grid').addClass('invisivel');
             $('#quantidade_registros').text(response.Quantidade);
-
+            //pegar a pagina selecionada btn
             var btn = $('ul.pagination > li.active').first();
             var pagina = (btn && btn.length == 1) ? parseInt(btn.text()) : 1;
             atualizar_grid(pagina);
@@ -122,7 +122,8 @@ function salvar_erro() {
     swal('Aviso', 'Não foi possível salvar. Tente novamente em instantes.', 'warning');
 }
 
-function atualizar_grid(pagina, btn) {
+//1º mexi aqui => para realtime na pagina 
+function atualizar_grid(pagina, btn) { 
     var ordem = obter_ordem_grid(),
         filtro = $('#txt_filtro'),
         tamPag = $('#ddl_tam_pag').val(),
@@ -134,18 +135,20 @@ function atualizar_grid(pagina, btn) {
             var table = $('#grid_cadastro').find('tbody');
 
             table.empty();
-            if (response.length > 0) {
+            //restornando informação do response
+            if (response.Lista.length > 0) {
                 $('#grid_cadastro').removeClass('invisivel');
                 $('#mensagem_grid').addClass('invisivel');
-
-                for (var i = 0; i < response.length; i++) {
-                    table.append(criar_linha_grid(response[i]));
+                //qui
+                for (var i = 0; i < response.Lista.length; i++) {
+                    table.append(criar_linha_grid(response.Lista[i]));
                 }
             }
             else {
                 $('#grid_cadastro').addClass('invisivel');
                 $('#mensagem_grid').removeClass('invisivel');
             }
+            atualizar_paginacao(response.Quantidade, pagina)
 
             if (btn) {
                 btn.siblings().removeClass('active');
@@ -157,6 +160,24 @@ function atualizar_grid(pagina, btn) {
             swal('Aviso', 'Não foi possível recuperar as informações. Tente novamente em instantes.', 'warning');
         });
 }
+
+//2º Aqui tambem remontando a paginação
+function atualizar_paginacao(quant_paginas, pagina_atual) {
+    var container = $('#paginas');
+    var pagination = container.find('.pagination');
+
+    pagination.empty();
+    if (quant_paginas > 1) {
+        container.css('display', 'block');
+
+        for (var pagina = 1; pagina <= quant_paginas; pagina++) {
+            pagination.append(`<li class="page-item${pagina == pagina_atual ? ' active' : ''}"><a class="page-link" href="#">${pagina}</a> `)
+        }
+    } else {
+        container.css('display', 'none');
+    }
+}
+
 
 $(document).on('click', '#btn_incluir', function () {
     abrir_form(get_dados_inclusao());
@@ -205,7 +226,14 @@ $(document).on('click', '#btn_incluir', function () {
                                 $('#grid_cadastro').addClass('invisivel');
                                 $('#mensagem_grid').removeClass('invisivel');
                             }
+                            //este é o que nos retorna a quantidade_total_de_registros que aparece em todas as telas
                             $('#quantidade_registros').text(response.Quantidade);
+                            //este vai atualizar o pagination o select de paginação
+                            //Vamos lá => pego o botão de paginação btn == $('ul.pagination > li.active').first();
+                            var btn = $('ul.pagination > li.active').first();
+                            //Caso este botão não tenha pagina será sempre a 1 ou (pagina = 1)
+                            var pagina = (btn && btn.length == 1) ? parseInt(btn.text()) : 1;
+                            atualizar_grid(pagina);
                         }
                     })
                         .fail(function () {
@@ -232,6 +260,7 @@ $(document).on('click', '#btn_incluir', function () {
                 });
         }
     })
+    //este é o click no botão seletor de paginas 1, 2, 3....
     .on('click', '.page-item', function () {
         var btn = $(this);
         var pagina = parseInt(btn.text());

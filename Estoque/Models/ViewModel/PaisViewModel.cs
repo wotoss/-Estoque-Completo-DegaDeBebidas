@@ -7,8 +7,8 @@ namespace Estoque.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Informe o nome")]
-        [MaxLength(30, ErrorMessage = "O nome pode ter no máximo 30 caracteres")]
+        [Required(ErrorMessage = "Preencha o nome.")]
+        [MaxLength(30, ErrorMessage = "O nome pode ter no máximo 30 caracteres.")]
         public string Nome { get; set; }
 
         [Required(ErrorMessage = "Preencha o código internacional.")]
@@ -16,9 +16,5 @@ namespace Estoque.Models
         public string Codigo { get; set; }
 
         public bool Ativo { get; set; }
-
-       
     }
 }
-
-        
