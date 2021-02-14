@@ -3,7 +3,7 @@ using System.Web.Mvc;
 
 namespace Estoque.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         [Authorize]
         //[AllowAnonymous]

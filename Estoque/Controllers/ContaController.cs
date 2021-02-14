@@ -1,5 +1,4 @@
 ﻿
-
 using Estoque.Models;
 using System;
 using System.Configuration;
@@ -11,7 +10,7 @@ using System.Web.Security;
 
 namespace Estoque.Controllers
 {
-    public class ContaController : Controller //BaseController
+    public class ContaController : BaseController
     {
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)

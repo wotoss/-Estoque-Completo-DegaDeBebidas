@@ -1,9 +1,10 @@
-﻿function set_dados_form(dados) {
+﻿
+
+function set_dados_form(dados) {
     $('#id_cadastro').val(dados.Id);
     $('#txt_nome').val(dados.Nome);
     $('#ddl_pais').val(dados.IdPais);
     $('#cbx_ativo').prop('checked', dados.Ativo);
-
     $('#ddl_estado').val(dados.IdEstado);
     $('#ddl_estado').prop('disabled', dados.IdEstado <= 0 || dados.IdEstado == undefined);
 }
@@ -29,6 +30,7 @@ function get_dados_form() {
         IdPais: $('#ddl_pais').val(),
         IdEstado: $('#ddl_estado').val(),
         Ativo: $('#cbx_ativo').prop('checked')
+        
     };
 }
 

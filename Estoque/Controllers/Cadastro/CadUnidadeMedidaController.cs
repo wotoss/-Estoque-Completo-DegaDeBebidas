@@ -1,12 +1,11 @@
-﻿using Estoque.Controllers;
+﻿
 using Estoque.Models;
-using Estoque.Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
-namespace ControleEstoque.Web.Controllers.Cadastro
+namespace Estoque.Controllers.Cadastro
 {
     [Authorize(Roles = "Gerente,Administrativo,Operador")]
     public class CadUnidadeMedidaController : BaseController
@@ -21,7 +20,7 @@ namespace ControleEstoque.Web.Controllers.Cadastro
 
             var lista = Mapper.Map<List<UnidadeMedidaViewModel>>(UnidadeMedidaModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina));
             var quant = UnidadeMedidaModel.RecuperarQuantidade();
-
+            ViewBag.QuantidadeRegistros = quant;
             var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
             ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
 
@@ -34,8 +33,9 @@ namespace ControleEstoque.Web.Controllers.Cadastro
         public JsonResult UnidadeMedidaPagina(int pagina, int tamPag, string filtro, string ordem)
         {
             var lista = Mapper.Map<List<UnidadeMedidaViewModel>>(UnidadeMedidaModel.RecuperarLista(pagina, tamPag, filtro, ordem));
-
-            return Json(lista);
+            var quantRegistro = UnidadeMedidaModel.RecuperarQuantidade();
+            var quantidade = QuantidadePaginas(quantRegistro);
+            return Json(new { Lista = lista, Quantidade = quantidade });
         }
 
         [HttpPost]
@@ -53,7 +53,9 @@ namespace ControleEstoque.Web.Controllers.Cadastro
         [ValidateAntiForgeryToken]
         public JsonResult ExcluirUnidadeMedida(int id)
         {
-            return Json(UnidadeMedidaModel.ExcluirPeloId(id));
+            var ok = UnidadeMedidaModel.ExcluirPeloId(id);
+            var quant = UnidadeMedidaModel.RecuperarQuantidade();
+            return Json(new { Ok = ok, Quantidade = quant });
         }
 
         [HttpPost]
@@ -64,6 +66,7 @@ namespace ControleEstoque.Web.Controllers.Cadastro
             var resultado = "OK";
             var mensagens = new List<string>();
             var idSalvo = string.Empty;
+            var quant = 0; //definição da quantidade em todos
 
             if (!ModelState.IsValid)
             {
@@ -79,6 +82,7 @@ namespace ControleEstoque.Web.Controllers.Cadastro
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
+                        quant = UnidadeMedidaModel.RecuperarQuantidade(); //mas um para fazer em todos
                     }
                     else
                     {
@@ -91,7 +95,7 @@ namespace ControleEstoque.Web.Controllers.Cadastro
                 }
             }
 
-            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
+            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo, Quantidade = quant });
         }
     }
 }

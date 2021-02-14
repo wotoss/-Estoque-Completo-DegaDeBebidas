@@ -1,12 +1,11 @@
-﻿using AutoMapper;
-using Estoque.Controllers;
+﻿
 using Estoque.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
-namespace ControleEstoque.Web.Controllers
+namespace Estoque.Controllers
 {
     [Authorize(Roles = "Gerente,Administrativo,Operador")]
     public class CadCidadeController : BaseController
@@ -18,13 +17,18 @@ namespace ControleEstoque.Web.Controllers
             ViewBag.QuantMaxLinhasPorPagina = _quantMaxLinhasPorPagina;
             ViewBag.PaginaAtual = 1;
 
-            var lista = CidadeModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina);
-            var quant = CidadeModel.RecuperarQuantidade();
+            //var lista = Mapper.Map<List<ProdutoViewModel>>(ProdutoModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina));
 
-            var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
-            ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
+            //var lista = CidadeModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina);
             ViewBag.Paises = Mapper.Map<List<PaisViewModel>>(PaisModel.RecuperarLista());
-
+            var lista = Mapper.Map<List<CidadeViewModel>>(CidadeModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina));
+            var quant = CidadeModel.RecuperarQuantidade();
+            ViewBag.QuantidadeRegistros = quant; //Colocar isto em todos
+            ViewBag.QuantPaginas = QuantidadePaginas (quant);
+            //var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
+            //ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
+            
+           
             return View(lista);
         }
 
@@ -33,8 +37,9 @@ namespace ControleEstoque.Web.Controllers
         public JsonResult CidadePagina(int pagina, int tamPag, string filtro, string ordem)
         {
             var lista = CidadeModel.RecuperarLista(pagina, tamPag, filtro, ordem);
-
-            return Json(lista);
+            var quantRegistro = CidadeModel.RecuperarQuantidade();
+            var quantidade = QuantidadePaginas(quantRegistro);
+            return Json(new { Lista = lista, Quantidade = quantidade });
         }
 
         [HttpPost]
@@ -61,7 +66,9 @@ namespace ControleEstoque.Web.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult ExcluirCidade(int id)
         {
-            return Json(CidadeModel.ExcluirPeloId(id));
+            var ok = CidadeModel.ExcluirPeloId(id);
+            var quant = CidadeModel.RecuperarQuantidade();
+            return Json(new { Ok = ok, Quantidade = quant });
         }
 
         [HttpPost]
@@ -71,6 +78,7 @@ namespace ControleEstoque.Web.Controllers
             var resultado = "OK";
             var mensagens = new List<string>();
             var idSalvo = string.Empty;
+            var quant = 0; //definição da quantidade em todos
 
             if (!ModelState.IsValid)
             {
@@ -86,6 +94,7 @@ namespace ControleEstoque.Web.Controllers
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
+                        quant = CidadeModel.RecuperarQuantidade(); //mas um para fazer em todos
                     }
                     else
                     {
@@ -98,7 +107,7 @@ namespace ControleEstoque.Web.Controllers
                 }
             }
 
-            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
+            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo, Quantidade = quant });
         }
     }
 }

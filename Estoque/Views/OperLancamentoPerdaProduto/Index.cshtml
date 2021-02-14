@@ -1,5 +1,4 @@
 ﻿
-<!--Esta View não é tipada, não precisei adicionar arroba_model-->
 @{
     ViewBag.Title = "Lançamento de Perda de Produtos";
 }
@@ -79,66 +78,42 @@
         </tr>
     </script>
     <script>
-        //IMPORTANTE QUANDO TENHO QUE USAR ALGO EM MAIS DE UM LUGAR EU CRIO UMA FUNÇÃO
         function preecher_tela() {
-            //para obter o (id do inventario=> id_inventario) eu pego o Valor (val) do (dropdow, que é o select ($('#ddl_inventario').val())
             var id_inventario = $('#ddl_inventario').val(),
-                //para  montar minha url =  Eu uso => Ação (RecuperarListaProdutoComDiferencaEmInventario) => Controller (OperLancamentoPerdaProduto) e parmetro (?inventario=' + id_inventario,)
-                //Controller tem a (ação) dentro
                 url = '@Url.Action("RecuperarListaProdutoComDiferencaEmInventario", "OperLancamentoPerdaProduto")?inventario=' + id_inventario,
-                //vou pegar o meu id= grid e busco (find) o pedaço que eu quero (tbody)
                 grid = $('#grid').find('tbody');
-            //E limpo atraves do (empty), o pedaço que eu busquei ou montei  (grid)
             grid.empty();
-            //Agora vou fazer a minha solicitação Ajax
             $.ajax({
-                //o tipo é GET
                 type: 'GET',
                 processData: false,
                 url: url,
-                //O tipo de dados Quero que seja em Json
                 dataType: 'json',
-                //Logo eu retorno do servidor um (reponse => que seria a resposta do servidor)
                 success: function (response) {
-                    //Agora precisamos ver Algo => Se Response (Tem dados ou seja maior que zero representado pelo (i) )
-                    //O que eu faço dou um apeend dentro do grid => (grid.append(criar_linha_grid(response[i]));)
                     if (response) {
                         for (var i = 0; i < response.length; i++) {
-                            //Lembrando que criei esta funçao (criar_linha_grid)
                             grid.append(criar_linha_grid(response[i]));
                         }
                     }
-                    //Caso não tenha dados ai eu dou um (swit alert swal)
                     else {
                         swal('Aviso', 'Não foi possível recuperar os produtos do inventário.', 'warning');
                     }
                 },
-                //dando erro eu faço o mesmo procedimento. mostro um (swit alert => swall)
                 error: function () {
                     swal('Aviso', 'Não foi possível recuperar os produtos do inventário.', 'warning');
                 }
             });
         }
-        //Já na criação de minha função (criar_linha_grid)
-        //DETALHE AQUI NA FUNÇÃO EU PASSO COMO PARAMETRO OS DADOS => JÁ ACIMA PARA RECEBER DENTRO DO GRID EU RECEBO A INFORMAÇÃO COMO => (response => grid.append(criar_linha_grid(response[i]));)
         function criar_linha_grid(dados) {
-            //vamos ler o que tem dentro do meu id =>( #template-grid' e dou um html => para ler) 
             var template = $('#template-grid').html();
-            //aqui eu peço para o mustache renderizar os (template e os dados).
             return Mustache.render(template, dados);
         }
         function obter_dados() {
             var ret = [];
-            //nesta id = #grid tbody tr => estou pegando a linha do meu formulário
-            //para cada um dele eu vou dar um each
             $('#grid tbody tr').each(function (index, item) {
                 var tr = $(item),
-                    //pegando o Id de cada linha atraves do atributo
                     id = tr.attr('data-id'),
-                    //aqui vou buscar(find) o input que seja o tipo text ('input[type=text]').val() e pegar o (valor dele).
                     motivo = tr.find('input[type=text]').val();
                 if (motivo != '') {
-                    //veja que o meu ret => retorno para o array[] dou um push => passado o que eu busquei o Id e o Motivo
                     ret.push({ Id: id, Motivo: motivo });
                 }
             });
@@ -160,34 +135,24 @@
         .on('change', '#ddl_inventario', function () {
             preecher_tela();
         })
-        //vamos fazer o evento de salvar
         .on('click', '#btn_salvar', function () {
             if (!verificar_preenchimento()) {
                 swal('Aviso', 'Para salvar, você deve preencher algum motivo.', 'warning');
             }
             else {
-                //vamos montar a minha url => (ação (Salvar e a Controller => OperLancamentoPerdaProduto ))
                 var url = '@Url.Action("Salvar", "OperLancamentoPerdaProduto")',
-                    dados = { dados: obter_dados() };
-
-                //Ao criar o Ajax eu inicio a montagem do meu envio de dados..
+                dados = { dados: obter_dados() };
                 $.ajax({
-                    //Ajax do tipo Post
                     type: 'POST',
                     processData: false,
-                    //contruindo o meu ajax Salvar, tenho que colocar o (contentType)
                     contentType: 'application/json',
-                    //aqui tenho os meus dados pelo data
                     data: JSON.stringify(add_anti_forgery_token(dados)),
-                    //a url que já foi montada acima.
                     url: url,
                     dataType: 'json',
-                    //aqui vem a minha resposta do servidor atraves o Switl alert, Mensagem esta de atenção info
                     success: function (response) {
                         if (response) {
                             swal('Aviso', 'Lançamento de perdas salvo com sucesso.', 'info');
                         }
-                        //caso não consiga salvar envio msg pelo Suliwt Alert Swall, Mensagem esta de atenção warning
                         else {
                             swal('Aviso', 'Não foi possível salvar os lançamentos de perdas de produtos.', 'warning');
                         }

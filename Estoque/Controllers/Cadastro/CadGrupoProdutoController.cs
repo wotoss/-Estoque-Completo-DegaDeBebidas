@@ -16,13 +16,14 @@ namespace Estoque.Controllers
             ViewBag.ListaTamPag = new SelectList(new int[] { _quantMaxLinhasPorPagina, 10, 15, 20 }, _quantMaxLinhasPorPagina);
             ViewBag.QuantMaxLinhasPorPagina = _quantMaxLinhasPorPagina;
             ViewBag.PaginaAtual = 1;
+            
 
             var lista = Mapper.Map<List<GrupoProdutoViewModel>>(GrupoProdutoModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina));
             var quant = GrupoProdutoModel.RecuperarQuantidade();
             //ViewBag.QuantidadeRegistros = quant;
             //var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
             //ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
-            ViewBag.QuantidadeRegistros = quant;
+            ViewBag.QuantidadeRegistros = quant; //Colocar isto em todos
             ViewBag.QuantPaginas = QuantidadePaginas (quant);
 
             return View(lista);
@@ -52,8 +53,11 @@ namespace Estoque.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult ExcluirGrupoProduto(int id)
         {
+            //aqui ele excluir
             var ok = GrupoProdutoModel.ExcluirPeloId(id);
+            //aqui recupera o valor do base de dados => atualizando o grid
             var quant = GrupoProdutoModel.RecuperarQuantidade();
+            //aqui ele retorna tudo
             return Json(new { Ok = ok, Quantidade = quant });
         }
 
@@ -64,7 +68,7 @@ namespace Estoque.Controllers
             var resultado = "OK";
             var mensagens = new List<string>();
             var idSalvo = string.Empty;
-            var quant = 0;
+            var quant = 0; //definição da quantidade em todos
 
             if (!ModelState.IsValid)
             {
@@ -80,7 +84,7 @@ namespace Estoque.Controllers
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
-                        quant = GrupoProdutoModel.RecuperarQuantidade();
+                        quant = GrupoProdutoModel.RecuperarQuantidade(); //mas um para fazer em todos
                     }
                     else
                     {
@@ -92,8 +96,8 @@ namespace Estoque.Controllers
                     resultado = "ERRO";
                 }
             }
-
-            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo, Quantidade = quant });
+            //monta o retorno quant => em todos
+            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo, Quantidade = quant }); 
         }
     }
 }

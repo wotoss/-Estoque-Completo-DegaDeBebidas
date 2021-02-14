@@ -20,14 +20,14 @@
                 <div class="form-group">
                     @Html.LabelFor(m => m.Usuario, new { @class = "col-md-2 control-label" })
                     <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Usuario, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.Usuario, new { @class = "form-control", placeholder = " Digite seu login" })
                         @Html.ValidationMessageFor(m => m.Usuario, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(m => m.Senha, new { @class = "col-md-2 control-label" })
+                    @Html.LabelFor(m => m.Senha, new { @class = "col-md-2 control-label" } )
                     <div class="col-md-10">
-                        @Html.PasswordFor(m => m.Senha, new { @class = "form-control" })
+                        @Html.PasswordFor(m => m.Senha, new { @class = "form-control", placeholder = "Digite sua senha" })
                         @Html.ValidationMessageFor(m => m.Senha, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -49,7 +49,7 @@
         </section>
         
         <div class="col-md-12 text-center">
-            <img id="logo_redondo" src="~/Content/Imagens/Adega.jpeg" alt="Adega" @*style="height: 80px"*@ />
+            <img id="logo_redondo" src="~/Content/Imagens/Adega.jpeg" alt="Adega" />
         </div>
         <!--Teste Fim-->
     </div>

@@ -103,15 +103,19 @@
     <script src="~/Scripts/sweetalert2.min.js"></script>
     <script>
         function limpar_tela() {
+            //usando o seletor para lim para todos os input
             $('#grid tbody tr input').each(function (index, input) {
                 $(input).val('');
             });
         }
         function verificar_preenchimento() {
             var ret = false;
+            //neste caso eu tambem estou usando o selector para buscar um input mas em especifico o que for di tipo [type=number]
             $('#grid tbody tr input[type=number]').each(function (index, input) {
                 if ($(input).val() != '') {
+                    //este return true é para retornar na função
                     ret = true;
+                    //este return false é para parar o each
                     return false;
                 }
             });
@@ -136,6 +140,7 @@
             });
             return ret;
         }
+        //quando a pagina for aberta
         $(document).ready(function () {
             limpar_tela();
         })

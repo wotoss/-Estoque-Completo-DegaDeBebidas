@@ -22,6 +22,8 @@ namespace Estoque.Controllers.Cadastro
             var lista = Mapper.Map<List<PerfilViewModel>>(PerfilModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina));
             var quant = PerfilModel.RecuperarQuantidade();
 
+            ViewBag.QuantidadeRegistros = quant; //Colocar isto em todos
+
             var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
             ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
 
@@ -33,8 +35,9 @@ namespace Estoque.Controllers.Cadastro
         public JsonResult PerfilPagina(int pagina, int tamPag, string filtro, string ordem)
         {
             var lista = Mapper.Map<List<PerfilViewModel>>(PerfilModel.RecuperarLista(pagina, tamPag, filtro, ordem));
-
-            return Json(lista);
+            var quantRegistro = PerfilModel.RecuperarQuantidade();
+            var quantidade = QuantidadePaginas(quantRegistro);
+            return Json(new { Lista = lista, Quantidade = quantidade });
         }
 
         [HttpPost]
@@ -49,7 +52,9 @@ namespace Estoque.Controllers.Cadastro
         [ValidateAntiForgeryToken]
         public JsonResult ExcluirPerfil(int id)
         {
-            return Json(PerfilModel.ExcluirPeloId(id));
+            var ok = PerfilModel.ExcluirPeloId(id);
+            var quant = PerfilModel.RecuperarQuantidade();
+            return Json(new { Ok = ok, Quantidade = quant });
         }
 
         [HttpPost]
@@ -59,6 +64,7 @@ namespace Estoque.Controllers.Cadastro
             var resultado = "OK";
             var mensagens = new List<string>();
             var idSalvo = string.Empty;
+            var quant = 0; //definição da quantidade em todos
 
             if (!ModelState.IsValid)
             {
@@ -87,6 +93,7 @@ namespace Estoque.Controllers.Cadastro
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
+                        quant = PerfilModel.RecuperarQuantidade(); //mas um para fazer em todos
                     }
                     else
                     {
@@ -99,7 +106,7 @@ namespace Estoque.Controllers.Cadastro
                 }
             }
 
-            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
+            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo, Quantidade = quant });
         }
     }
 }

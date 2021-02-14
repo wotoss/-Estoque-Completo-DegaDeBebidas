@@ -147,8 +147,8 @@ function preencher_linha_grid(param, linha) {
     linha
         .eq(0).html(param.Nome).end()
         .eq(1).html(param.Telefone).end()
-        .eq(1).html(param.Contato).end()
-        .eq(2).html(param.Ativo ? 'SIM' : 'NÃO');
+        .eq(2).html(param.Contato).end()//1
+        .eq(3).html(param.Ativo ? 'SIM' : 'NÃO');//2
 }
 
 $(document)

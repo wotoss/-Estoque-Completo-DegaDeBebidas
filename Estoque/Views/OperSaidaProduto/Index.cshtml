@@ -93,12 +93,8 @@
             $('#txt_numero').val('');
             $('#grid tbody').empty();
             incluir_linha_produto();
-
-            //estou pegando o 1º select da lista (select:first)
             var ddl = $('#grid tbody tr select:first');
-            //pergunto existi o algum drop e existndo eu execulto o evento trigger('change')
             if (ddl.length > 0) {
-               // eu execulto o evento trigger('change')
                 ddl.trigger('change');
             }
         }
@@ -172,23 +168,16 @@
             var linha = $(this).closest('tr');
             linha.remove();
         })
-            //IMPORTANTISSIMO
-            //ESTOU LIGANDO O EVENTO (CHANGE) AO SELECT ID QUE ESTEJA (^ => COMEÇANDO) COM (ddl_produto_)=> OU SEJA VAI PEGAR OS SELECT QUE SEJA PARECIDO COM ESTE ID
             .on('change', 'select[id^="ddl_produto_"]', function () {
                 var url = '@Url.Action("RecuperarQuantidadeEstoqueProduto", "CadProduto")',
-                    //Este ddl seria este id=>ddl_produto_ que acabou de ser selecionado
                     ddl = $(this),
-                    //agora eu vou pra o (closest) ou seja vou para linha da tabela o nosso grid (tr). 
-                    //Quando eu chego no (tr) eu faço a busca(find)=>(td => ou coluna) => que tenha a [class=quant-estoque]
                     div_quant_estoque = ddl.closest('tr').find('td[class=quant-estoque]'),
                     dados = {
-                        id: parseInt(ddl.val()) //depois disto eu pego o valor do id do produto
+                        id: parseInt(ddl.val())
                     };
-                //E vou passar tudo isto para um post...
                 $.post(url, add_anti_forgery_token(dados), function (response) {
-                    //retornando um Ok e um Result => Lá no meu back-end tem que ter um Ok e um Result aguardando o retorno
                     if (response.OK) {
-                        div_quant_estoque.text(response.Result);//aqui estou preenchendo o valor que veio do result
+                        div_quant_estoque.text(response.Result);
                     }
                 })
                     .fail(function () {
@@ -199,7 +188,6 @@
     <script id="template-produto" type="x-tmpl-mustache">
         <tr>
             <td>
-                <!--OS (ddl_produto_ os ddl) sempre são os ()drowpDaw Select-->
                 <select class="form-control" id="ddl_produto_{{ Sequencia }}">
                     @foreach (var produto in ViewBag.Produtos)
                     {

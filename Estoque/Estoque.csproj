@@ -303,7 +303,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\CadGrupoProduto\Index.cshtml" />
     <Content Include="Views\CadUsuario\Index.cshtml" />
-    <Content Include="Views\Grafico\EntradaSaidaMes.cshtml" />
+    <Content Include="Views\Grafico\EntradaSaidaMesa.cshtml" />
     <Content Include="Views\Grafico\PerdaMes.cshtml" />
     <Content Include="Views\Relatorio\RelatPosicaoEstoqueView.cshtml" />
     <Content Include="Views\Relatorio\RelatRessuprimentoView.cshtml" />

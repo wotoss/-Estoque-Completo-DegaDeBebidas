@@ -22,7 +22,7 @@ namespace Estoque.Controllers
 
             //var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
             //ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
-            
+            ViewBag.QuantidadeRegistros = quant;
             ViewBag.QuantPaginas = QuantidadePaginas(quant);
             return View(lista);
         }
@@ -63,6 +63,7 @@ namespace Estoque.Controllers
             var resultado = "OK";
             var mensagens = new List<string>();
             var idSalvo = string.Empty;
+            var quant = 0; //definição da quantidade em todos
 
             if (!ModelState.IsValid)
             {
@@ -78,6 +79,7 @@ namespace Estoque.Controllers
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
+                        quant = PaisModel.RecuperarQuantidade(); //mas um para fazer em todos
                     }
                     else
                     {
@@ -90,7 +92,7 @@ namespace Estoque.Controllers
                 }
             }
 
-            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
+            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo, Quantidade = quant });
         }
     }
 }

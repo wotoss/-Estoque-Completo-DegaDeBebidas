@@ -65,7 +65,6 @@ function abrir_form(dados) {
     $('#msg_aviso').hide();
     $('#msg_mensagem_aviso').hide();
     $('#msg_erro').hide();
-
     bootbox.dialog({
         title: 'Cadastro de ' + tituloPagina,
         message: modal_cadastro,
@@ -87,6 +86,7 @@ function criar_linha_grid(dados) {
 }
 
 function salvar_ok(response, param) {
+    debugger
     if (response.Resultado == "OK") {
         if (param.Id == 0) {
             param.Id = response.IdSalvo;
@@ -97,6 +97,7 @@ function salvar_ok(response, param) {
             var btn = $('ul.pagination > li.active').first();
             var pagina = (btn && btn.length == 1) ? parseInt(btn.text()) : 1;
             atualizar_grid(pagina);
+                      
         }
         else {
             var linha = $('#grid_cadastro').find('tr[data-id=' + param.Id + ']').find('td');
@@ -129,6 +130,7 @@ function atualizar_grid(pagina, btn) {
         tamPag = $('#ddl_tam_pag').val(),
         url = url_page_click,
         param = { 'pagina': pagina, 'tamPag': tamPag, 'filtro': filtro.val(), 'ordem': ordem };
+       
 
     $.post(url, add_anti_forgery_token(param), function (response) {
         if (response) {
@@ -139,17 +141,19 @@ function atualizar_grid(pagina, btn) {
             if (response.Lista.length > 0) {
                 $('#grid_cadastro').removeClass('invisivel');
                 $('#mensagem_grid').addClass('invisivel');
+               
                 //qui
                 for (var i = 0; i < response.Lista.length; i++) {
                     table.append(criar_linha_grid(response.Lista[i]));
                 }
+               
             }
             else {
                 $('#grid_cadastro').addClass('invisivel');
                 $('#mensagem_grid').removeClass('invisivel');
             }
             atualizar_paginacao(response.Quantidade, pagina)
-
+           
             if (btn) {
                 btn.siblings().removeClass('active');
                 btn.addClass('active');
@@ -243,17 +247,22 @@ $(document).on('click', '#btn_incluir', function () {
             }
         });
     })
+    //aqui esta o botão SALVAR
     .on('click', '#btn_confirmar', function () {
         var btn = $(this),
             url = url_confirmar,
             param = get_dados_form();
+           
 
         if (salvar_customizado && typeof (salvar_customizado) == 'function') {
             salvar_customizado(url, param, salvar_ok, salvar_erro);
+            
         }
+        
         else {
             $.post(url, add_anti_forgery_token(param), function (response) {
                 salvar_ok(response, param);
+               
             })
                 .fail(function () {
                     salvar_erro();

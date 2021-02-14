@@ -1,6 +1,4 @@
 ﻿
-
-using Estoque.Controllers;
 using Estoque.Models;
 using System;
 using System.Collections.Generic;
@@ -25,6 +23,8 @@ namespace Estoque.Controllers
             var lista = Mapper.Map<List<UsuarioViewModel>>(UsuarioModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina));
             var quant = UsuarioModel.RecuperarQuantidade();
 
+            ViewBag.QuantidadeRegistros = quant; //Colocar isto em todos
+
             var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
             ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
 
@@ -36,8 +36,9 @@ namespace Estoque.Controllers
         public JsonResult UsuarioPagina(int pagina, int tamPag, string filtro, string ordem)
         {
             var lista = Mapper.Map<List<UsuarioViewModel>>(UsuarioModel.RecuperarLista(pagina, tamPag, filtro, ordem));
-
-            return Json(lista);
+            var quantRegistro = UsuarioModel.RecuperarQuantidade();
+            var quantidade = QuantidadePaginas(quantRegistro);
+            return Json(new { Lista = lista, Quantidade = quantidade });
         }
 
         [HttpPost]
@@ -54,7 +55,9 @@ namespace Estoque.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ExcluirUsuario(int id)
         {
-            return Json(UsuarioModel.ExcluirPeloId(id));
+            var ok = UsuarioModel.ExcluirPeloId(id);
+            var quant = UsuarioModel.RecuperarQuantidade();
+            return Json(new { Ok = ok, Quantidade = quant });
         }
 
         [HttpPost]
@@ -64,6 +67,7 @@ namespace Estoque.Controllers
             var resultado = "OK";
             var mensagens = new List<string>();
             var idSalvo = string.Empty;
+            var quant = 0; //definição da quantidade em todos
 
             if (!ModelState.IsValid)
             {
@@ -84,6 +88,7 @@ namespace Estoque.Controllers
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
+                        quant = UsuarioModel.RecuperarQuantidade(); //mas um para fazer em todos
                     }
                     else
                     {
@@ -96,7 +101,7 @@ namespace Estoque.Controllers
                 }
             }
 
-            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
+            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo, Quantidade = quant });
         }
     }
 }

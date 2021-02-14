@@ -1,13 +1,12 @@
-﻿using AutoMapper;
+﻿
 using Estoque.Models;
-using Estoque.Models.Binders;
 using Estoque.Models.ViewModel;
 using System.Collections.Generic;
 using System.Web.Mvc;
 
 namespace Estoque.Controllers.Operacao
 {
-    public abstract class OperEntradaSaidaProdutoController : Controller//BaseController
+    public abstract class OperEntradaSaidaProdutoController : BaseController
     {
         public ActionResult Index()
         {

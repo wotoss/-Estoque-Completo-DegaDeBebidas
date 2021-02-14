@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<Estoque.Models.Domain.EntradaProdutoModel>
+@{
     ViewBag.Title = "Entrada de produtos";
 }
 
@@ -89,6 +90,12 @@
             $('#grid tbody').empty();
             incluir_linha_produto();
         }
+        //Teste excluir
+        function set_dados_form(dados) {
+            $('data-id').val(dados.Id);
+
+        }
+            //Teste excluit
         function obter_lista_entradas() {
             var ret = [];
             $('#grid tbody tr').each(function (index, item) {
@@ -105,8 +112,10 @@
         $(document).ready(function () {
             var hoje = new Date();
             $('#txt_data').val(formatar_data(hoje));
+
             limpar_tela();
         })
+
         .on('click', '#btn_incluir', function () {
             incluir_linha_produto();
         })
@@ -124,6 +133,7 @@
                     };
                 $.post(url, add_anti_forgery_token(dados), function (response) {
                     if (response.OK) {
+
                         $('#txt_numero').val(response.Numero);
                         swal('Sucesso', 'Entrada de produtos salva com sucesso.', 'info');
                     }
@@ -154,14 +164,62 @@
                     }
                 });
             }
-        })
-        .on('click', '.btn_remover', function () {
-            var linha = $(this).closest('tr');
-            linha.remove();
+        })//btn-excluir btn_remover
+            .on('click', '.btn-excluir', function () {
+                debugger
+            //var linha = $(this).closest('tr');
+            //linha.remove();
+            //montanto excluir
+            var btn = $(this),
+                tr = btn.closest('tr'),
+                id = tr.attr('data-id'),
+                //url = url_excluir,
+                param = { 'id': id };
+                //linha.remove();
+            bootbox.confirm({
+                message: "Realmente deseja excluir  " ,
+                buttons: {
+                    confirm: {
+                        label: 'Sim',
+                        className: 'btn-danger'
+                    },
+                    cancel: {
+                        label: 'Não',
+                        className: 'btn-success'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        $.post(url, add_anti_forgery_token(param), function (response) {
+                            if (response.Ok) {
+                                tr.remove();
+                                var quant = $('#grid_cadastro > tbody > tr').length;
+                                if (quant == 0) {
+                                    $('#grid_cadastro').addClass('invisivel');
+                                    $('#mensagem_grid').removeClass('invisivel');
+                                }
+                                //este é o que nos retorna a quantidade_total_de_registros que aparece em todas as telas
+                                $('#quantidade_registros').text(response.Quantidade);
+                                //este vai atualizar o pagination o select de paginação
+                                //Vamos lá => pego o botão de paginação btn == $('ul.pagination > li.active').first();
+                                var btn = $('ul.pagination > li.active').first();
+                                //Caso este botão não tenha pagina será sempre a 1 ou (pagina = 1)
+                                var pagina = (btn && btn.length == 1) ? parseInt(btn.text()) : 1;
+                                atualizar_grid(pagina);
+                            }
+                        })
+                            .fail(function () {
+                                swal('Aviso', 'Não foi possível excluir. Tente novamente em instantes.', 'warning');
+                            });
+                    }
+                }
+            });
+        //})
+            //fim montando excluir
         });
     </script>
     <script id="template-produto" type="x-tmpl-mustache">
-        <tr>
+        <tr data-id="{{ Id }}">
             <td>
                 <select class="form-control" id="ddl_produto_{{ Sequencia }}">
                     @foreach (var produto in ViewBag.Produtos)
@@ -173,11 +231,11 @@
             <td>
                 <input type="number" id="txt_quantidade_{{ Sequencia }}" class="form-control" value="">
             </td>
-            <td>
-                <a class="btn btn-warning btn_remover" role="button">
+            <td><!--btn_remover-->
+                <a class="btn btn-warning btn-excluir" role="button">
                     <i class="glyphicon glyphicon-trash"></i>
                 </a>
             </td>
-        </tr>
+            </>
     </script>
 }

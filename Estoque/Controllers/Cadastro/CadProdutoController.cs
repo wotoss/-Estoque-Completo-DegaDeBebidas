@@ -21,12 +21,13 @@ namespace Estoque.Controllers.Cadastro
             ViewBag.ListaTamPag = new SelectList(new int[] { _quantMaxLinhasPorPagina, 10, 15, 20 }, _quantMaxLinhasPorPagina);
             ViewBag.QuantMaxLinhasPorPagina = _quantMaxLinhasPorPagina;
             ViewBag.PaginaAtual = 1;
+            ViewBag.QuantidadeRegistros = 0;
 
             var lista = Mapper.Map<List<ProdutoViewModel>>(ProdutoModel.RecuperarLista(ViewBag.PaginaAtual, _quantMaxLinhasPorPagina));
             var quant = ProdutoModel.RecuperarQuantidade();
-
             var difQuantPaginas = (quant % ViewBag.QuantMaxLinhasPorPagina) > 0 ? 1 : 0;
             ViewBag.QuantPaginas = (quant / ViewBag.QuantMaxLinhasPorPagina) + difQuantPaginas;
+            ViewBag.QuantidadeRegistros = quant;
             ViewBag.UnidadesMedida = Mapper.Map<List<UnidadeMedidaViewModel>>(UnidadeMedidaModel.RecuperarLista(1, 9999));
             ViewBag.Grupos = Mapper.Map<List<GrupoProdutoViewModel>>(GrupoProdutoModel.RecuperarLista(1, 9999));
             ViewBag.Marcas = Mapper.Map<List<MarcaProdutoViewModel>>(MarcaProdutoModel.RecuperarLista(1, 9999));
@@ -90,6 +91,7 @@ namespace Estoque.Controllers.Cadastro
             var resultado = "OK";
             var mensagens = new List<string>();
             var idSalvo = string.Empty;
+            var quant = 0; //definição da quantidade em todos
 
             var nomeArquivoImagem = "";
             HttpPostedFileBase arquivo = null;
@@ -156,6 +158,8 @@ namespace Estoque.Controllers.Cadastro
                     if (id > 0)
                     {
                         idSalvo = id.ToString();
+                        quant = ProdutoModel.RecuperarQuantidade(); //mas um para fazer em todos
+
                         if (!string.IsNullOrEmpty(nomeArquivoImagem) && arquivo != null)
                         {
                             var diretorio = Server.MapPath("~/Content/Imagens");
@@ -181,7 +185,7 @@ namespace Estoque.Controllers.Cadastro
                 }
             }
 
-            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
+            return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo, Quantidade = quant });
         }
     }
 }
